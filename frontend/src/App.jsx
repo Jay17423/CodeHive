@@ -14,25 +14,25 @@ const App = () => {
     return (
       <div className="join-container">
         <div className="join-form">
-          
           {/* join form  */}
+
           <h1> Join Code Room </h1>
+          {/* Get Room id from the user to join him in that room */}
           <input
             type="text"
             placeholder="Room Id"
             value={roomId}
             onChange={(e) => setRoomId(e.target.value)}
-          />{" "}
-          {/* Get Room id from the user to join him in that room */}
+          />
+          {/* get user name */}
           <input
             type="text"
             placeholder="User Name"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
-          />{" "}
-          {/* get user name */}
-          <button> Join Room </button>
-          
+          />
+          <button > Join Room </button>
+
         </div>
       </div>
     );
