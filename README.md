@@ -25,3 +25,6 @@ In backend folder, run:
 # Extra  
 - Install **ES7 + React/Redux/React-Native Snippets** from VS Code Extension.  
 - Create `.gitignore`.  
+
+
+setup done from my side
