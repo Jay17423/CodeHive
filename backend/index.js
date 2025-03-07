@@ -43,9 +43,9 @@ io.on("connection", (socket) => {
     io.to(roomId).emit("userJoined", Array.from(rooms.get(currentRoom)));// notify other users then user joined
   })
 
-  socket.on("disconnect", () => {  // Extra part later we will remove it
-    console.log("user disconnected");
-  });
+  //socket.on("disconnect", () => {  // Extra part later we will remove it
+    //console.log("user disconnected");
+  //});
 })
 
 const port = process.env.PORT || 5050;
