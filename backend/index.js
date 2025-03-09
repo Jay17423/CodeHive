@@ -40,7 +40,10 @@ io.on("connection", (socket) => {
     }
 
     rooms.get(roomId).add(userName)
+
     io.to(roomId).emit("userJoined", Array.from(rooms.get(currentRoom)));// notify other users then user joined
+
+    console.log("used joined room", roomId);
   })
 
   //socket.on("disconnect", () => {  // Extra part later we will remove it
