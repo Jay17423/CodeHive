@@ -3,6 +3,7 @@ import "./App.css";
 import io from "socket.io-client";
 import Editor from '@monaco-editor/react'
 
+
 const socket = io("http://localhost:5050");
 
 const App = () => {
@@ -10,8 +11,9 @@ const App = () => {
   const [joined, setJoined] = useState(false);
   const [roomId, setRoomId] = useState("");
   const [userName, setUserName] = useState("");
-  const [language, setLanguage] = useState("javascript");
+  const [language, setLanguage] = useState("javascript");  // default language as JavaScript
   const [code, setCode] = useState("");
+
 
   // function for button onclick 
   const joinRoom = () =>{
@@ -21,11 +23,18 @@ const App = () => {
     }
   };
 
-  // function for copy Room Id
 
+  // function for copy Room Id
   const copyRoomId = () =>{
 
   };
+
+
+  // function to handle the edited code on the code editor
+  const handleCodeChange = (newCode) =>{
+    setCode(newCode);
+  }
+
 
   if( !joined ){
     return (
@@ -74,7 +83,22 @@ const App = () => {
           <option value="python">Python</option>
           <option value="java">Java</option>
         </select>
-        <button className="leave-room" >Leave Room</button>
+        <button className="leave-room">Leave Room</button>
+      </div>
+      <div className="editor-wrapper">
+        <Editor 
+          height= {"100%"}
+          defaultLanguage= {language}
+          language= {language}
+          value= {code}
+          onChange= {handleCodeChange}
+          theme= "vs-dark"
+          options ={
+            {
+              minimap: {enabled:false},
+              fontSize: 14,
+            }}
+        />
       </div>
     </div>
   );
