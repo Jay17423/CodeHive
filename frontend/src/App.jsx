@@ -64,16 +64,16 @@ const App = () => {
     );
   }
   return (
-    <div className="edito-container">
+    <div className="editor-container">
       <div className="sidebar">
         <div className="room-info">
           <h2>Code Room :{roomId}</h2>
-          <button onClick={copyRoomId}>Copy Id</button>
+          <button className="copy-button" onClick={copyRoomId}>Copy Id</button>
         </div>
-        <h3>User in Room:</h3>
+        <h3>Users in Room</h3>
         <ul>
-          <li> Ram</li>
-          <li> Krishna</li>
+          <li> Ram </li>
+          <li> Krishna </li>
         </ul>
         <p className="typing-indicator"> User typing... </p>
         <select className="language-selector">
