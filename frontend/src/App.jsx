@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import io from "socket.io-client";
+import Editor from '@monaco-editor/react'
 
 const socket = io("http://localhost:5050");
 
@@ -9,6 +10,8 @@ const App = () => {
   const [joined, setJoined] = useState(false);
   const [roomId, setRoomId] = useState("");
   const [userName, setUserName] = useState("");
+  const [language, setLanguage] = useState("javascript");
+  const [code, setCode] = useState("");
 
   // function for button onclick 
   const joinRoom = () =>{
@@ -64,10 +67,17 @@ const App = () => {
           <li> Krishna</li>
         </ul>
         <p className="typing-indicator"> User typing... </p>
-
+        <select className="language-selector">
+          <option value="javascript">JavaScript</option>
+          <option value="cpp">C++</option>
+          <option value="c">C</option>
+          <option value="python">Python</option>
+          <option value="java">Java</option>
+        </select>
+        <button className="leave-room" >Leave Room</button>
       </div>
     </div>
-  )
+  );
 };
 
 export default App;
