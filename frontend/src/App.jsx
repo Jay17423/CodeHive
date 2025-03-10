@@ -14,7 +14,25 @@ const App = () => {
   const [language, setLanguage] = useState("javascript");  // default language as JavaScript
   const [code, setCode] = useState("");
   const [copySuccess, setCopySuccess] = useState("");
+  const [users, setUsers] = useState([]);
 
+  
+  useEffect( () => {
+    socket.on("userJoined", (users) => {
+      setUsers(users);
+    });
+
+    // code update functionality
+    socket.on("codeUpdate", (newCode) => {
+      setCode(newCode);
+    }) 
+
+    // cleanup function for socket off
+    return () => {
+      socket.off("userJoined");
+      socket.off("codeUpdate");
+    };
+  }, []);
 
   // function for button onclick 
   const joinRoom = () =>{
@@ -36,6 +54,7 @@ const App = () => {
   // function to handle the edited code on the code editor
   const handleCodeChange = (newCode) =>{
     setCode(newCode);
+    socket.emit("codeChange", {roomId, code: newCode});
   }
 
 
@@ -66,21 +85,31 @@ const App = () => {
       </div>
     );
   }
+
   return (
     <div className="editor-container">
       <div className="sidebar">
         <div className="room-info">
-          <h2>Code Room :{roomId}</h2>
-          <button className="copy-button" onClick={copyRoomId}>Copy Id</button>
+          <h2> Code Room :{roomId} </h2>
+          <button className="copy-button" onClick={copyRoomId}> Copy Id </button>
+          {/* if copied then show it  */}
           { copySuccess && <span className="copy-success">{copySuccess}</span>}
         </div>
         <h3>Users in Room</h3>
         <ul>
-          <li> Ram </li>
-          <li> Krishna </li>
+          {
+            users.map((user, index) => (
+              <li key={index}> {user.slice(0,8)}..</li>
+            ))
+          }
         </ul>
         <p className="typing-indicator"> User typing... </p>
-        <select className="language-selector">
+        { /* to choose the language of our choice */}
+        <select 
+          className="language-selector" 
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
+          >
           <option value="javascript">JavaScript</option>
           <option value="cpp">C++</option>
           <option value="c">C</option>
@@ -97,8 +126,7 @@ const App = () => {
           value= {code}
           onChange= {handleCodeChange}
           theme= "vs-dark"
-          options ={
-            {
+          options ={{
               minimap: { enabled: false },
               fontSize: 14,
             }}
