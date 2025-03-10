@@ -13,6 +13,7 @@ const App = () => {
   const [userName, setUserName] = useState("");
   const [language, setLanguage] = useState("javascript");  // default language as JavaScript
   const [code, setCode] = useState("");
+  const [copySuccess, setCopySuccess] = useState("");
 
 
   // function for button onclick 
@@ -26,7 +27,9 @@ const App = () => {
 
   // function for copy Room Id
   const copyRoomId = () =>{
-
+    navigator.clipboard.writeText(roomId);
+    setCopySuccess("Copied!");
+    setTimeout(() => setCopySuccess(""), 2000);
   };
 
 
@@ -69,6 +72,7 @@ const App = () => {
         <div className="room-info">
           <h2>Code Room :{roomId}</h2>
           <button className="copy-button" onClick={copyRoomId}>Copy Id</button>
+          { copySuccess && <span className="copy-success">{copySuccess}</span>}
         </div>
         <h3>Users in Room</h3>
         <ul>
@@ -83,7 +87,7 @@ const App = () => {
           <option value="python">Python</option>
           <option value="java">Java</option>
         </select>
-        <button className="leave-room">Leave Room</button>
+        <button className="leave-button">Leave Room</button>
       </div>
       <div className="editor-wrapper">
         <Editor 
@@ -95,7 +99,7 @@ const App = () => {
           theme= "vs-dark"
           options ={
             {
-              minimap: {enabled:false},
+              minimap: { enabled: false },
               fontSize: 14,
             }}
         />
