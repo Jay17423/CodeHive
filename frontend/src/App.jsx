@@ -33,15 +33,21 @@ const App = () => {
       setTimeout(()=> setTyping(""), 6000); // empty it after 2 seconds
     });
   
+    // for language change
+    socket.on("languageUpdate", (newLanguage) => {
+      setLanguage(newLanguage);
+    })
+
     // cleanup function for socket off
     return () => {
       socket.off("userJoined");
       socket.off("codeUpdate");
       socket.off("userTyping");
+      socket.off("languageUpdate");
     };
   }, []);
 
-  // useEffect for
+  // useEffect tp handle room on reload the page
 
   useEffect( ()=> {
     const handleBeforeUnload = () => {
@@ -79,6 +85,12 @@ const App = () => {
     socket.emit("typing", {roomId, userName});  // typing indicator
   }
 
+  // function to handle the language change
+  const handleLanguageChange = (e) => {
+    const newLanguage = e.target.value;
+    setLanguage(newLanguage);
+    socket.emit("languageChange", {roomId, language: newLanguage});
+  }
 
   if( !joined ){
     return (
@@ -130,7 +142,7 @@ const App = () => {
         <select 
           className="language-selector" 
           value={language}
-          onChange={(e) => setLanguage(e.target.value)}
+          onChange={handleLanguageChange}
           >
           <option value="javascript">JavaScript</option>
           <option value="cpp">C++</option>

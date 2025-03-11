@@ -72,6 +72,12 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("userTyping", userName)
   })
 
+  /*  language change */
+
+  socket.on("languageChange", ({roomId, language}) => {
+    io.to(roomId).emit("languageUpdate", language)
+  })
+ 
   /*  to disconnect user   */
 
   socket.on("disconnect", () => {
