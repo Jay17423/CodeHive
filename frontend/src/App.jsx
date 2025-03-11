@@ -15,7 +15,7 @@ const App = () => {
   const [code, setCode] = useState("");
   const [copySuccess, setCopySuccess] = useState("");
   const [users, setUsers] = useState([]);
-
+  const [typing, setTyping] = useState([]);
   
   useEffect( () => {
     socket.on("userJoined", (users) => {
@@ -27,10 +27,31 @@ const App = () => {
       setCode(newCode);
     }) 
 
+    // typing indicator functionality
+    socket.on("userTyping", (user)=>{
+      setTyping(`${user.slice(0, 8)}... is Typing`)
+      setTimeout(()=> setTyping(""), 6000); // empty it after 2 seconds
+    });
+  
     // cleanup function for socket off
     return () => {
       socket.off("userJoined");
       socket.off("codeUpdate");
+      socket.off("userTyping");
+    };
+  }, []);
+
+  // useEffect for
+
+  useEffect( ()=> {
+    const handleBeforeUnload = () => {
+      socket.emit("leaveRoom");
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 
@@ -55,6 +76,7 @@ const App = () => {
   const handleCodeChange = (newCode) =>{
     setCode(newCode);
     socket.emit("codeChange", {roomId, code: newCode});
+    socket.emit("typing", {roomId, userName});  // typing indicator
   }
 
 
@@ -103,7 +125,7 @@ const App = () => {
             ))
           }
         </ul>
-        <p className="typing-indicator"> User typing... </p>
+        <p className="typing-indicator"> {typing} </p>
         { /* to choose the language of our choice */}
         <select 
           className="language-selector" 

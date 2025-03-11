@@ -52,10 +52,35 @@ io.on("connection", (socket) => {
   socket.to(roomId).emit("codeUpdate", code)
   });
 
-  
-  //socket.on("disconnect", () => {  // Extra part later we will remove it
-    //console.log("user disconnected");
-  //});
+  /* leave user  */
+
+  socket.on("leaveRoom", () => {
+    if (currentRoom && currentUser) {
+      rooms.get(currentRoom).delete(currentUser);
+      io.to(currentRoom).emit("userJoined", Array.from(rooms.get(currentRoom)));
+
+      socket.leave(currentRoom);
+
+      currentRoom = null;
+      currentUser = null;
+    }
+  });
+
+  /* typing indicator */
+
+  socket.on("typing", ({roomId, userName}) => {
+    socket.to(roomId).emit("userTyping", userName)
+  })
+
+  /*  to disconnect user   */
+
+  socket.on("disconnect", () => {
+    if(currentRoom && currentUser ){
+      rooms.get(currentRoom).delete(currentUser);
+      io.to(currentRoom).emit("userJoined", Array.from(rooms.get(currentRoom))); // notify other user that somebody left the room
+    }
+    console.log("user Disconnected");
+  });
 });
 
 const port = process.env.PORT || 5050;
