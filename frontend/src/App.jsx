@@ -14,7 +14,7 @@ const App = () => {
   const [copySuccess, setCopySuccess] = useState("");
   const [users, setUsers] = useState([]);
   const [typing, setTyping] = useState([]);
-
+  
   useEffect(() => {
     socket.on("userJoined", (users) => {
       setUsers(users);
@@ -59,6 +59,22 @@ const App = () => {
     };
   }, []);
 
+  // useEffect to listen for redirect event
+
+  useEffect(() => {
+    socket.on("redirectToJoinPage", () => {
+      setJoined(false);
+      setRoomId("");
+      setUserName("");
+      setCode("// start code here");
+      setLanguage("javascript");
+    });
+
+    return () => {
+      socket.off("redirectToJoinPage");
+    };
+  }, []);
+
   /*   function for button onclick   */
   const joinRoom = () => {
     if (roomId && userName) {
@@ -68,13 +84,9 @@ const App = () => {
   };
 
   /*   function for leave room    */
+  
   const leaveRoom = () => {
     socket.emit("leaveRoom");
-    setJoined("false");
-    setRoomId("");
-    setUserName("");
-    setCode("// start code here");
-    setLanguage("javascript");
   };
 
   /* function for copy Room Id  */
@@ -130,7 +142,9 @@ const App = () => {
       <div className="sidebar">
         <div className="room-info">
           <h2> Code Room : {roomId} </h2>
-          <button className="copy-button" onClick={copyRoomId}>Copy Id</button>
+          <button className="copy-button" onClick={copyRoomId}>
+            Copy Id
+          </button>
           {/* if copied then show it  */}
           {copySuccess && <span className="copy-success">{copySuccess}</span>}
         </div>

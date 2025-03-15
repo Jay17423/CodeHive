@@ -56,13 +56,23 @@ io.on("connection", (socket) => {
 
   socket.on("leaveRoom", () => {
     if (currentRoom && currentUser) {
-      rooms.get(currentRoom).delete(currentUser);
-      io.to(currentRoom).emit("userJoined", Array.from(rooms.get(currentRoom)));
+    const roomUsers = rooms.get(currentRoom);
 
-      socket.leave(currentRoom);
+    if (roomUsers) {
+      roomUsers.delete(currentUser);
+      io.to(currentRoom).emit("userJoined", Array.from(roomUsers));
 
-      currentRoom = null;
-      currentUser = null;
+      if (roomUsers.size === 0) {
+        rooms.delete(currentRoom);
+      }
+    }
+
+    // Ensure the last user sees the join page
+    socket.emit("redirectToJoinPage");
+
+    socket.leave(currentRoom);
+    currentRoom = null;
+    currentUser = null;
     }
   });
 
@@ -81,11 +91,22 @@ io.on("connection", (socket) => {
   /*  to disconnect user   */
 
   socket.on("disconnect", () => {
-    if(currentRoom && currentUser ){
-      rooms.get(currentRoom).delete(currentUser);
-      io.to(currentRoom).emit("userJoined", Array.from(rooms.get(currentRoom))); // notify other user that somebody left the room
+    if (currentRoom && currentUser) {
+    const roomUsers = rooms.get(currentRoom);
+
+    if (roomUsers) {
+      roomUsers.delete(currentUser);
+      io.to(currentRoom).emit("userJoined", Array.from(roomUsers));
+
+      if (roomUsers.size === 0) {
+        rooms.delete(currentRoom);
+      }
     }
-    console.log("user Disconnected");
+
+    // Ensure the last user sees the join page if they were alone
+    socket.emit("redirectToJoinPage");
+  }
+  console.log("User Disconnected");
   });
 });
 
