@@ -14,7 +14,23 @@ const App = () => {
   const [copySuccess, setCopySuccess] = useState("");
   const [users, setUsers] = useState([]);
   const [typing, setTyping] = useState([]);
-  
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("theme") === "dark"
+  );
+
+
+  useEffect(() => {
+     document.documentElement.setAttribute(
+       "data-theme",
+       darkMode ? "dark" : "light"
+     );
+     localStorage.setItem("theme", darkMode ? "dark" : "light");
+   }, [darkMode]);
+
+
+  const toggleDarkMode = () => setDarkMode(!darkMode);
+
+
   useEffect(() => {
     socket.on("userJoined", (users) => {
       setUsers(users);
@@ -28,7 +44,7 @@ const App = () => {
     // typing indicator functionality
     socket.on("userTyping", (user) => {
       setTyping(`${user.slice(0, 8)}... is Typing`);
-      setTimeout(() => setTyping(""), 6000); // empty it after 2 seconds
+      setTimeout(() => setTyping(""), 4000); // empty it after 2 seconds
     });
 
     // for language change
@@ -45,7 +61,7 @@ const App = () => {
     };
   }, []);
 
-  // useEffect tp handle room on reload the page
+  // useEffect to handle room on reload the page
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -58,6 +74,21 @@ const App = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.add("theme-transition");
+    document.documentElement.setAttribute(
+      "data-theme",
+      darkMode ? "dark" : "light"
+    );
+
+    setTimeout(() => {
+      document.documentElement.classList.remove("theme-transition");
+    }, 300); // Delay for transition effect
+
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
 
   // useEffect to listen for redirect event
 
@@ -84,7 +115,7 @@ const App = () => {
   };
 
   /*   function for leave room    */
-  
+
   const leaveRoom = () => {
     socket.emit("leaveRoom");
   };
@@ -118,19 +149,23 @@ const App = () => {
 
           <h1> Join Code Room </h1>
           {/* Get Room id from the user to join him in that room */}
-          <input
-            type="text"
-            placeholder="Room Id"
-            value={roomId}
-            onChange={(e) => setRoomId(e.target.value)}
-          />
+          <div className="input-container">
+            <input
+              type="text"
+              placeholder="Room Id"
+              value={roomId}
+              onChange={(e) => setRoomId(e.target.value)}
+            />
+          </div>
           {/* get user name */}
-          <input
-            type="text"
-            placeholder="User Name"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-          />
+          <div className="input-container">
+            <input
+              type="text"
+              placeholder="User Name"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+            />
+          </div>
           <button onClick={joinRoom}> Join Room </button>
         </div>
       </div>
@@ -140,37 +175,45 @@ const App = () => {
   return (
     <div className="editor-container">
       <div className="sidebar">
-        <div className="room-info">
-          <h2> Code Room : {roomId} </h2>
-          <button className="copy-button" onClick={copyRoomId}>
-            Copy Id
+        <div className="sidebar-content">
+          <div className="room-info">
+            <h2> Code Room : {roomId} </h2>
+            <button className="copy-button" onClick={copyRoomId}>
+              Copy Id
+            </button>
+            {/* if copied then show it  */}
+            {copySuccess && <span className="copy-success">{copySuccess}</span>}
+          </div>
+          <h3>Users in Room</h3>
+          <ul>
+            {users.map((user, index) => (
+              <li key={index}> {user.slice(0, 8)}..</li>
+            ))}
+          </ul>
+          <p className="typing-indicator"> {typing} </p>
+          {/* to choose the language of our choice */}
+          <select
+            className="language-selector"
+            value={language}
+            onChange={handleLanguageChange}
+          >
+            <option value="javascript">JavaScript</option>
+            <option value="cpp">C++</option>
+            <option value="c">C</option>
+            <option value="python">Python</option>
+            <option value="java">Java</option>
+          </select>
+          <button className="leave-button" onClick={leaveRoom}>
+            Leave Room
           </button>
-          {/* if copied then show it  */}
-          {copySuccess && <span className="copy-success">{copySuccess}</span>}
         </div>
-        <h3>Users in Room</h3>
-        <ul>
-          {users.map((user, index) => (
-            <li key={index}> {user.slice(0, 8)}..</li>
-          ))}
-        </ul>
-        <p className="typing-indicator"> {typing} </p>
-        {/* to choose the language of our choice */}
-        <select
-          className="language-selector"
-          value={language}
-          onChange={handleLanguageChange}
-        >
-          <option value="javascript">JavaScript</option>
-          <option value="cpp">C++</option>
-          <option value="c">C</option>
-          <option value="python">Python</option>
-          <option value="java">Java</option>
-        </select>
-        <button className="leave-button" onClick={leaveRoom}>
-          Leave Room
-        </button>
+        <div className="theme-toggle-container">
+          <button className="toggle-dark-mode" onClick={toggleDarkMode}>
+            {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
+          </button>
+        </div>
       </div>
+
       <div className="editor-wrapper">
         <Editor
           height={"100%"}
@@ -178,7 +221,7 @@ const App = () => {
           language={language}
           value={code}
           onChange={handleCodeChange}
-          theme="vs-dark"
+          theme={darkMode ? "vs-dark" : "vs-light"}
           options={{
             minimap: { enabled: false },
             fontSize: 14,
