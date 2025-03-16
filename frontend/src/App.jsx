@@ -18,18 +18,15 @@ const App = () => {
     localStorage.getItem("theme") === "dark"
   );
 
-
   useEffect(() => {
-     document.documentElement.setAttribute(
-       "data-theme",
-       darkMode ? "dark" : "light"
-     );
-     localStorage.setItem("theme", darkMode ? "dark" : "light");
-   }, [darkMode]);
-
+    document.documentElement.setAttribute(
+      "data-theme",
+      darkMode ? "dark" : "light"
+    );
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
 
   const toggleDarkMode = () => setDarkMode(!darkMode);
-
 
   useEffect(() => {
     socket.on("userJoined", (users) => {
@@ -89,22 +86,26 @@ const App = () => {
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
-
   // useEffect to listen for redirect event
 
   useEffect(() => {
-    socket.on("redirectToJoinPage", () => {
-      setJoined(false);
-      setRoomId("");
-      setUserName("");
-      setCode("// start code here");
-      setLanguage("javascript");
-    });
+    const handleRedirect = () => {
+      if (joined) {
+        // Only update state if needed
+        setJoined(false);
+        setRoomId("");
+        setUserName("");
+        setCode("// start code here");
+        setLanguage("javascript");
+      }
+    };
+
+    socket.on("redirectToJoinPage", handleRedirect);
 
     return () => {
-      socket.off("redirectToJoinPage");
+      socket.off("redirectToJoinPage", handleRedirect);
     };
-  }, []);
+  }, []); 
 
   /*   function for button onclick   */
   const joinRoom = () => {
@@ -118,7 +119,8 @@ const App = () => {
 
   const leaveRoom = () => {
     socket.emit("leaveRoom");
-  };
+    setJoined(false);
+    };
 
   /* function for copy Room Id  */
   const copyRoomId = () => {

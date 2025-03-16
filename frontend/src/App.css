@@ -49,7 +49,7 @@ button:hover {
   align-items: center;
   height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  animation: fadeIn 1s ease-in-out;
+  animation: fadeIn 1s ease-in-out forwards;
 }
 
 .join-form {
@@ -59,7 +59,7 @@ button:hover {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   text-align: center;
   width: 320px;
-  animation: slideDown 0.6s ease-in-out;
+  animation: slideDown 0.6s ease-in-out forwards;
 }
 
 .join-form h1 {

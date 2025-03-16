@@ -68,7 +68,6 @@ io.on("connection", (socket) => {
     }
 
     // Ensure the last user sees the join page
-    socket.emit("redirectToJoinPage");
 
     socket.leave(currentRoom);
     currentRoom = null;
