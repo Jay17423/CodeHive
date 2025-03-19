@@ -24,7 +24,8 @@ In backend folder, run:
 
 # Extra  
 - Install **ES7 + React/Redux/React-Native Snippets** from VS Code Extension.  
-- Create `.gitignore`.  
+- Create `.gitignore`. 
+- Done 
 
 # code Editor
  `cd frontend && npm i @monaco-editor/react`
