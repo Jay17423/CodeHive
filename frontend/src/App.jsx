@@ -1,113 +1,98 @@
-import React, { useState, useEffect } from "react";
+// App.js
+import React, { useEffect, useState, useRef } from "react";
 import "./App.css";
 import io from "socket.io-client";
-import Editor from "@monaco-editor/react";
+import { useDispatch, useSelector } from "react-redux";
+import { setCode, setLanguage, setRoomId, setVersion } from "./Slice/CodeSlice";
+import JoinRoom from "./Components/JoinRoom";
+import Sidebar from "./Components/Sidebar";
+import CodeEditor from "./Components/CodeEditor";
+import OutputConsole from "./Components/OutputConsole";
 
 const socket = io("http://localhost:5050");
 
 const App = () => {
+  const dispatch = useDispatch();
+  const { code, language, roomId, version } = useSelector(
+    (state) => state.code
+  );
   const [joined, setJoined] = useState(false);
-  const [roomId, setRoomId] = useState("");
   const [userName, setUserName] = useState("");
-  const [language, setLanguage] = useState("javascript"); // default language as JavaScript
-  const [code, setCode] = useState("// start code here ");
   const [copySuccess, setCopySuccess] = useState("");
   const [users, setUsers] = useState([]);
-  const [typing, setTyping] = useState([]);
-  const [darkMode, setDarkMode] = useState(
-    localStorage.getItem("theme") === "dark"
-  );
+  const [typing, setTyping] = useState("");
+  const [output, setOutput] = useState("");
+
+
+
+
 
   useEffect(() => {
-    document.documentElement.setAttribute(
-      "data-theme",
-      darkMode ? "dark" : "light"
-    );
-    localStorage.setItem("theme", darkMode ? "dark" : "light");
-  }, [darkMode]);
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = "Are you sure you want to leave this page?";
+    };
 
-  const toggleDarkMode = () => setDarkMode(!darkMode);
+    const handlePopState = () => {
+      const confirmNavigation = window.confirm(
+        "Are you sure you want to leave this page?"
+      );
+      if (!confirmNavigation) {
+        window.history.pushState(null, "", window.location.href);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
 
   useEffect(() => {
     socket.on("userJoined", (users) => {
       setUsers(users);
     });
 
-    // code update functionality
     socket.on("codeUpdate", (newCode) => {
-      setCode(newCode);
+      dispatch(setCode(newCode));
     });
 
-    // typing indicator functionality
     socket.on("userTyping", (user) => {
-      setTyping(`${user.slice(0, 8)}... is Typing`);
-      setTimeout(() => setTyping(""), 4000); // empty it after 2 seconds
+      setTyping(`${user.slice(0, 8)}... is typing...`);
+      setTimeout(() => setTyping(""), 2000);
     });
 
-    // for language change
     socket.on("languageUpdate", (newLanguage) => {
-      setLanguage(newLanguage);
+      dispatch(setLanguage(newLanguage));
     });
 
-    // cleanup function for socket off
+    socket.on("codeResponse", (response) => {
+      setOutput(response.run.output);
+    });
+
+
     return () => {
       socket.off("userJoined");
       socket.off("codeUpdate");
       socket.off("userTyping");
       socket.off("languageUpdate");
+      socket.off("codeResponse");
     };
   }, []);
-
-  // useEffect to handle room on reload the page
 
   useEffect(() => {
     const handleBeforeUnload = () => {
       socket.emit("leaveRoom");
     };
-
     window.addEventListener("beforeunload", handleBeforeUnload);
-
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 
-  useEffect(() => {
-    document.documentElement.classList.add("theme-transition");
-    document.documentElement.setAttribute(
-      "data-theme",
-      darkMode ? "dark" : "light"
-    );
-
-    setTimeout(() => {
-      document.documentElement.classList.remove("theme-transition");
-    }, 300); // Delay for transition effect
-
-    localStorage.setItem("theme", darkMode ? "dark" : "light");
-  }, [darkMode]);
-
-  // useEffect to listen for redirect event
-
-  useEffect(() => {
-    const handleRedirect = () => {
-      if (joined) {
-        // Only update state if needed
-        setJoined(false);
-        setRoomId("");
-        setUserName("");
-        setCode("// start code here");
-        setLanguage("javascript");
-      }
-    };
-
-    socket.on("redirectToJoinPage", handleRedirect);
-
-    return () => {
-      socket.off("redirectToJoinPage", handleRedirect);
-    };
-  }, []); 
-
-  /*   function for button onclick   */
   const joinRoom = () => {
     if (roomId && userName) {
       socket.emit("join", { roomId, userName });
@@ -115,123 +100,113 @@ const App = () => {
     }
   };
 
-  /*   function for leave room    */
-
   const leaveRoom = () => {
     socket.emit("leaveRoom");
     setJoined(false);
-    };
+    dispatch(setRoomId(""));
+    setUserName("");
+    dispatch(setCode("//Start code here"));
+    dispatch(setLanguage("javascript"));
+  };
 
-  /* function for copy Room Id  */
   const copyRoomId = () => {
     navigator.clipboard.writeText(roomId);
     setCopySuccess("Copied!");
-    setTimeout(() => setCopySuccess(""), 2000);
+    setTimeout(() => {
+      setCopySuccess("");
+    }, 2000);
   };
 
-  // function to handle the edited code on the code editor
   const handleCodeChange = (newCode) => {
-    setCode(newCode);
+    dispatch(setCode(newCode));
     socket.emit("codeChange", { roomId, code: newCode });
-    socket.emit("typing", { roomId, userName }); // typing indicator
+    socket.emit("userTyping", { roomId, userName });
   };
 
-  // function to handle the language change
   const handleLanguageChange = (e) => {
     const newLanguage = e.target.value;
-    setLanguage(newLanguage);
+    dispatch(setLanguage(newLanguage));
     socket.emit("languageChange", { roomId, language: newLanguage });
+  };
+
+  const runCode = () => {
+    socket.emit("compileCode", { code, language, roomId, version });
+  };
+
+
+
+  const downloadCode = () => {
+    const hardcodedData = `// Room ID: ${roomId}\n // User Name: ${userName}\n`;
+
+    const finalCode = hardcodedData + code;
+
+    const blob = new Blob([finalCode], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const extensions = {
+      javascript: "js",
+      python: "py",
+      c: "c",
+      cpp: "cpp",
+      java: "java",
+    };
+
+    a.download = `code.${extensions[language] || "txt"}`;
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   if (!joined) {
     return (
-      <div className="join-container">
-        <div className="join-form">
-          {/* join form  */}
-
-          <h1> Join Code Room </h1>
-          {/* Get Room id from the user to join him in that room */}
-          <div className="input-container">
-            <input
-              type="text"
-              placeholder="Room Id"
-              value={roomId}
-              onChange={(e) => setRoomId(e.target.value)}
-            />
-          </div>
-          {/* get user name */}
-          <div className="input-container">
-            <input
-              type="text"
-              placeholder="User Name"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-            />
-          </div>
-          <button onClick={joinRoom}> Join Room </button>
-        </div>
-      </div>
+      <JoinRoom
+        roomId={roomId}
+        userName={userName}
+        setRoomId={(e) => dispatch(setRoomId(e))}
+        setUserName={setUserName}
+        joinRoom={joinRoom}
+      />
     );
   }
 
   return (
     <div className="editor-container">
-      <div className="sidebar">
-        <div className="sidebar-content">
-          <div className="room-info">
-            <h2> Code Room : {roomId} </h2>
-            <button className="copy-button" onClick={copyRoomId}>
-              Copy Id
-            </button>
-            {/* if copied then show it  */}
-            {copySuccess && <span className="copy-success">{copySuccess}</span>}
-          </div>
-          <h3>Users in Room</h3>
-          <ul>
-            {users.map((user, index) => (
-              <li key={index}> {user.slice(0, 8)}..</li>
-            ))}
-          </ul>
-          <p className="typing-indicator"> {typing} </p>
-          {/* to choose the language of our choice */}
-          <select
-            className="language-selector"
-            value={language}
-            onChange={handleLanguageChange}
-          >
-            <option value="javascript">JavaScript</option>
-            <option value="cpp">C++</option>
-            <option value="c">C</option>
-            <option value="python">Python</option>
-            <option value="java">Java</option>
-          </select>
-          <button className="leave-button" onClick={leaveRoom}>
-            Leave Room
-          </button>
-        </div>
-        <div className="theme-toggle-container">
-          <button className="toggle-dark-mode" onClick={toggleDarkMode}>
-            {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
-          </button>
-        </div>
-      </div>
-
-      <div className="editor-wrapper">
-        <Editor
-          height={"100%"}
-          defaultLanguage={language}
+      
+        <Sidebar
+          roomId={roomId}
+          users={users}
+          typing={typing}
+          copyRoomId={copyRoomId}
+          copySuccess={copySuccess}
+          leaveRoom={leaveRoom}
+          downloadCode={downloadCode}
           language={language}
-          value={code}
-          onChange={handleCodeChange}
-          theme={darkMode ? "vs-dark" : "vs-light"}
-          options={{
-            minimap: { enabled: false },
-            fontSize: 14,
-          }}
+          handleLanguageChange={handleLanguageChange}
         />
+      <div className="editor-wrapper">
+        <div className="editor-header">
+          
+        </div>
+        <CodeEditor
+          language={language}
+          code={code}
+          handleCodeChange={handleCodeChange}
+        />
+        <div className="run-container">
+          <button className="run-btn" onClick={runCode}>
+            Execute
+          </button>
+          <OutputConsole output={output} />
+        </div>
       </div>
+      
+
     </div>
   );
 };
+
 
 export default App;

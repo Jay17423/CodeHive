@@ -1,116 +1,182 @@
-import express from "express"
-import http from "http"
-import { Server } from "socket.io"
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+import axios from "axios";
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import OpenAI from "openai";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
     origin: "*",
-  }
+  },
 });
 
-const rooms = new Map(); // rooms store
+// Use a Map to store rooms, where each room has a Set of users
+const rooms = new Map();
 
 io.on("connection", (socket) => {
-  console.log("User Connected",   socket.id);
+  console.log("User Connected", socket.id);
+  let currentRoom = null;
+  let currentUser = null;
 
-  let currentRoom = null ;  // initialise current room
-  let currentUser = null ;  // initialise current user
-
-  // join instance
-  socket.on("join" , ({roomId, userName}) => {
-    if(currentRoom){  // if user is already joined in any other room 
-      socket.leave(currentRoom) // then had to leave that room
-      rooms.get(currentRoom).delete(currentUser)
-  
-      io.to(currentRoom).emit("userJoined", Array.from(rooms.get(currentRoom)));// notify to other user of the current room that new user joined
+  // Listen for the "join" event when a user joins a room
+  socket.on("join", ({ roomId, userName }) => {
+    // If the user is already in a room, leave it and remove the user from the room's Set
+    if (currentRoom) {
+      socket.leave(currentRoom);
+      rooms.get(currentRoom).delete(currentUser);
+      io.to(currentRoom).emit("userJoined", Array.from(rooms.get(currentRoom)));
     }
 
-    // if user in not joined in any room then
+    // Update the current room and user
     currentRoom = roomId;
-    currentUser = userName;
-    socket.join(roomId)
+    currentUser = { id: socket.id, name: userName }; // Store user as an object with ID and name
 
-    // if this room id already exit then
-    if(!rooms.has(roomId)){
-      rooms.set(roomId , new Set());
+    // Join the new room
+    socket.join(roomId);
+
+    // Initialize the room's Set if it doesn't exist
+    if (!rooms.has(roomId)) {
+      rooms.set(roomId, new Set());
     }
 
-    rooms.get(roomId).add(userName)
+    // Add the user to the room's Set
+    rooms.get(roomId).add(currentUser);
 
-    io.to(roomId).emit("userJoined", Array.from(rooms.get(currentRoom)));// notify other users then user joined
-
-    // console.log("used joined room", roomId);
+    // Notify the room that a new user has joined
+    io.to(roomId).emit("userJoined", Array.from(rooms.get(roomId)));
   });
 
-  /* to show change in code to everyUser */
-
-  socket.on("codeChange", ({roomId, code}) => {
-  socket.to(roomId).emit("codeUpdate", code)
+  // Listen for code changes and broadcast them to the room
+  socket.on("codeChange", ({ roomId, code }) => {
+    socket.to(roomId).emit("codeUpdate", code);
   });
 
-  /* leave user  */
-
+  // Listen for the "leaveRoom" event when a user leaves the room
   socket.on("leaveRoom", () => {
     if (currentRoom && currentUser) {
-    const roomUsers = rooms.get(currentRoom);
+      // Remove the user from the room's Set
+      rooms.get(currentRoom).delete(currentUser);
+      io.to(currentRoom).emit("userJoined", Array.from(rooms.get(currentRoom)));
 
-    if (roomUsers) {
-      roomUsers.delete(currentUser);
-      io.to(currentRoom).emit("userJoined", Array.from(roomUsers));
-
-      if (roomUsers.size === 0) {
-        rooms.delete(currentRoom);
-      }
-    }
-
-    // Ensure the last user sees the join page
-
-    socket.leave(currentRoom);
-    currentRoom = null;
-    currentUser = null;
+      // Leave the room and reset currentRoom and currentUser
+      socket.leave(currentRoom);
+      currentRoom = null;
+      currentUser = null;
     }
   });
 
-  /* typing indicator */
+  // Listen for typing events and broadcast them to the room
+  socket.on("userTyping", ({ roomId, userName }) => {
+    socket.to(roomId).emit("userTyping", userName);
+  });
 
-  socket.on("typing", ({roomId, userName}) => {
-    socket.to(roomId).emit("userTyping", userName)
-  })
+  // Listen for language changes and broadcast them to the room
+  socket.on("languageChange", ({ roomId, language }) => {
+    io.to(roomId).emit("languageUpdate", language);
+  });
 
-  /*  language change */
+  // Listen for code compilation requests
+  socket.on("compileCode", async ({ code, roomId, language, version }) => {
+    if (rooms.has(roomId)) {
+      const room = rooms.get(roomId);
+      const response = await axios.post(
+        "https://emkc.org/api/v2/piston/execute",
+        {
+          language,
+          version,
+          files: [
+            {
+              content: code,
+            },
+          ],
+        }
+      );
+      
 
-  socket.on("languageChange", ({roomId, language}) => {
-    io.to(roomId).emit("languageUpdate", language)
-  })
- 
-  /*  to disconnect user   */
+      // Store the output in the room and broadcast it
+      room.output = response.data.run.output;
+      io.to(roomId).emit("codeResponse", response.data);
+    }
+  });
 
-  socket.on("disconnect", () => {
-    if (currentRoom && currentUser) {
-    const roomUsers = rooms.get(currentRoom);
+  //Group call Features
+  socket.on('startCall', ({ roomId }) => {
+    socket.to(roomId).emit('userStartedCall', { userId: socket.id });
+  });
+  
+  socket.on('webrtcOffer', ({ roomId, offer, targetUserId }) => {
+    socket.to(targetUserId).emit('webrtcOffer', { offer, senderId: socket.id });
+  });
+  
+  socket.on('webrtcAnswer', ({ roomId, answer, targetUserId }) => {
+    socket.to(targetUserId).emit('webrtcAnswer', { answer, senderId: socket.id });
+  });
+  
+  socket.on('iceCandidate', ({ roomId, candidate, targetUserId }) => {
+    socket.to(targetUserId).emit('iceCandidate', { candidate, senderId: socket.id });
+  });
+  
+  socket.on('endCall', ({ roomId }) => {
+    socket.to(roomId).emit('callEnded', { userId: socket.id });
+  });
 
-    if (roomUsers) {
-      roomUsers.delete(currentUser);
-      io.to(currentRoom).emit("userJoined", Array.from(roomUsers));
+  // Listen for AI assistance requests
+  socket.on("askAI", async ({ roomId, question, code }) => {
+    if (rooms.has(roomId)) {
+      try {
+        const prompt = `
+          You are a coding assistant. A user has written the following code:\n\n
+          "${code}"\n\n
+          They have asked: "${question}".\n
+          Please analyze the code and give a response according to the question asked to you point-wise.
+          Also, give best practices on how to write the code.
+        `;
 
-      if (roomUsers.size === 0) {
-        rooms.delete(currentRoom);
+        const response = await openai.chat.completions.create({
+          model: "gpt-4o-mini", // Use the correct model name
+          messages: [{ role: "system", content: prompt }],
+        });
+
+        // Broadcast the AI response to the room
+        io.to(roomId).emit("aiResponse", {
+          question,
+          response: response.choices[0].message.content,
+          // console.log(response.choices[0].message.content);
+        });
+      } catch (error) {
+        console.error("Error calling OpenAI API:", error);
+        io.to(roomId).emit("aiResponse", {
+          question,
+          response: "Failed to get AI response. Please try again.",
+        });
       }
     }
+  });
 
-    // Ensure the last user sees the join page if they were alone
-    socket.emit("redirectToJoinPage");
-  }
-  console.log("User Disconnected");
+  // Listen for disconnection events
+  socket.on("disconnect", () => {
+    if (currentRoom && currentUser) {
+      // Remove the user from the room's Set
+      rooms.get(currentRoom).delete(currentUser);
+      io.to(currentRoom).emit("userJoined", Array.from(rooms.get(currentRoom)));
+    }
+    console.log("User Disconnected", socket.id);
   });
 });
 
-const port = process.env.PORT || 5050;
-
+const port = process.env.PORT || 5000;
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
