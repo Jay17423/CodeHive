@@ -13,7 +13,6 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -103,33 +102,11 @@ io.on("connection", (socket) => {
           ],
         }
       );
-      
 
       // Store the output in the room and broadcast it
       room.output = response.data.run.output;
       io.to(roomId).emit("codeResponse", response.data);
     }
-  });
-
-  //Group call Features
-  socket.on('startCall', ({ roomId }) => {
-    socket.to(roomId).emit('userStartedCall', { userId: socket.id });
-  });
-  
-  socket.on('webrtcOffer', ({ roomId, offer, targetUserId }) => {
-    socket.to(targetUserId).emit('webrtcOffer', { offer, senderId: socket.id });
-  });
-  
-  socket.on('webrtcAnswer', ({ roomId, answer, targetUserId }) => {
-    socket.to(targetUserId).emit('webrtcAnswer', { answer, senderId: socket.id });
-  });
-  
-  socket.on('iceCandidate', ({ roomId, candidate, targetUserId }) => {
-    socket.to(targetUserId).emit('iceCandidate', { candidate, senderId: socket.id });
-  });
-  
-  socket.on('endCall', ({ roomId }) => {
-    socket.to(roomId).emit('callEnded', { userId: socket.id });
   });
 
   // Listen for AI assistance requests
