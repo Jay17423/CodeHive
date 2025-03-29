@@ -9,6 +9,7 @@ import Sidebar from "./Components/Sidebar";
 import CodeEditor from "./Components/CodeEditor";
 import OutputConsole from "./Components/OutputConsole";
 import AskAi from "./Components/AskAi";
+import Chat from "./Components/Chat";
 
 const socket = io("http://localhost:5050");
 
@@ -26,6 +27,26 @@ const App = () => {
   const [showAskAi, setShowAskAi] = useState(false);
   const [aiResponse, setAiResponse] = useState({ question: "", response: "" });
   // console.log(aiResponse);
+  const [messages, setMessages] = useState([]);
+  const [showChat, setShowChat] = useState(false);
+
+  const toggleChat = () => {
+    setShowChat((prev) => !prev);
+    console.log("Chat visibility:", !showChat);
+  };
+
+  useEffect(() => {
+    const handleChatMessage = (chatData) => {
+      setMessages((prevMessages) => [...prevMessages, chatData]);
+    };
+
+    socket.off("chatMessage"); // ✅ First, remove any existing listener
+    socket.on("chatMessage", handleChatMessage); // ✅ Add a fresh one
+
+    return () => {
+      socket.off("chatMessage", handleChatMessage); // ✅ Proper cleanup
+    };
+  }, []); // ✅ Empty dependency array ensures it runs only once
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -96,6 +117,8 @@ const App = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
+
+  
 
   const joinRoom = () => {
     if (roomId && userName) {
@@ -185,6 +208,7 @@ const App = () => {
   return (
     <div className="editor-container">
       <Sidebar
+        toggleChat={() => setShowChat(!showChat)}
         roomId={roomId}
         users={users}
         typing={typing}
@@ -195,6 +219,18 @@ const App = () => {
         language={language}
         handleLanguageChange={handleLanguageChange}
       />
+
+      {showChat && (
+        <div className="chat-container chat-visible">
+          <Chat
+            socket={socket}
+            roomId={roomId}
+            userName={userName}
+            messages={messages}
+            toggleChat={toggleChat}
+          />
+        </div>
+      )}
 
       <div className="editor-wrapper">
         <div className="editor-header">
@@ -214,6 +250,7 @@ const App = () => {
           <OutputConsole output={output} />
         </div>
       </div>
+
       {showAskAi && (
         <AskAi aiResponse={aiResponse} onSendQuestion={handleAskAI} />
       )}
