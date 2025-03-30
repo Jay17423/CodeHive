@@ -227,6 +227,7 @@ const App = () => {
             roomId={roomId}
             userName={userName}
             messages={messages}
+            setMessages={setMessages}
             toggleChat={toggleChat}
           />
         </div>

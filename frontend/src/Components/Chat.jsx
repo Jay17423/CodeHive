@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 
-const Chat = ({ socket, roomId, userName, messages, toggleChat }) => {
+const Chat = ({
+  socket,
+  roomId,
+  userName,
+  messages,
+  setMessages,
+  toggleChat,
+}) => {
   const [message, setMessage] = useState("");
 
   const sendMessage = () => {
@@ -9,33 +16,50 @@ const Chat = ({ socket, roomId, userName, messages, toggleChat }) => {
       setMessage("");
     }
   };
-  
-  
+
+  //  Function to clear all messages
+  const clearChat = () => {
+    setMessages([]); // Clear messages state
+  };
+
   return (
     <div className="chatbox-container chat-visible">
       {/* Chat Header */}
       <div className="chatbox-header">
         Chat Room
-        <button className="chatbox-close" onClick={toggleChat}>
-          ✖
-        </button>
+        <div className="chatbox-buttons">
+          <button
+            className="chatbox-clear"
+            onClick={clearChat}
+          >
+            🗑
+          </button>
+          <button
+            className="chatbox-close"
+             onClick={toggleChat}
+          >
+            ✖
+          </button>
+        </div>
       </div>
 
       {/* Chat Messages */}
       <div className="chatbox-messages">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`chat-message ${
-              msg.userName === userName ? "sent" : "received"
-            }`}
-          >
-            <strong>{msg.userName}</strong>
-            <p>{msg.message}</p>
-          </div>
-        ))}
+        {messages.length === 0 ? (
+          <p className="chatbox-empty">No messages yet</p>
+        ) : (
+          messages.map((msg, index) => (
+            <p
+              key={index}
+              className={`chat-message ${
+                msg.userName === userName ? "sent" : "received"
+              }`}
+            >
+              <strong>{msg.userName}: </strong> {msg.message}
+            </p>
+          ))
+        )}
       </div>
-
       {/* Chat Input */}
       <div className="chatbox-input-container">
         <input

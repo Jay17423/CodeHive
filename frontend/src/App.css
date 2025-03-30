@@ -513,6 +513,12 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Chatbox Buttons (Close & Clear Chat) */
+.chatbox-buttons {
+  display: flex;
+  gap: 10px;
+}
+
 /* Chat Close Button */
 .chatbox-close {
   background-color: transparent;
@@ -526,6 +532,45 @@ body {
 .chatbox-close:hover {
   color: #ff5555;
   transform: rotate(90deg);
+}
+
+/* Clear Chat Button */
+.chatbox-clear {
+  background: rgba(220, 203, 203, 0.8);
+  /* Light grey with transparency */
+  border: 1px solid rgba(200, 200, 200, 0.6);
+  padding: 6px 12px;
+  font-size: 20px;
+  font-weight: 1000;
+  color: #ce1818;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+/* Hover Effect */
+.chatbox-clear:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(180, 180, 180, 0.8);
+  color: #e98888;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Active Click Effect */
+.chatbox-clear:active {
+  background: rgba(230, 230, 230, 0.9);
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Empty Chat Message */
+.chatbox-empty {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 20px;
 }
 
 /* Chat Messages */
