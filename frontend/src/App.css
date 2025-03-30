@@ -2,11 +2,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
 }
 
 body {
   font-family: "Roboto", sans-serif;
-  background: #f0f2f5;
+  background: #061224;
   color: #333;
 }
 
@@ -388,6 +389,7 @@ body {
     transition: background 0.3s ease-in-out;
 }
 
+
   .chatbox-button:hover{
     background-color: #a534ce;
   }
@@ -699,4 +701,148 @@ body {
 .chatbox-input,
 .chatbox-send-button {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* Drawing Board */
+.drawing-board-container-main {
+  background-color: #121212;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.drawing-board-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  background: linear-gradient(to right, #333, #444);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.color-picker {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.color-option {
+  width: 28px;
+  height: 28px;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.color-option:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.color-option.active {
+  border-color: #ffffff;
+}
+
+.tool-selection {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tool-btn {
+  padding: 6px 12px;
+  background: linear-gradient(to bottom, #666, #333);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  font-weight: 500;
+  transition: background 0.3s ease-in-out, transform 0.1s;
+}
+
+.tool-btn:hover {
+  background: linear-gradient(to bottom, #888, #444);
+  transform: scale(1.05);
+}
+
+.tool-btn.active {
+  background: #007bff;
+  color: white;
+}
+
+.brush-size {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.brush-size input {
+  width: 80px;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  margin-left: 260px;
+}
+
+.actions button {
+  padding: 6px 12px;
+  background: linear-gradient(to bottom, #555, #222);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  font-weight: 500;
+  transition: background 0.3s ease-in-out, transform 0.1s;
+}
+
+.actions button:hover {
+  background: linear-gradient(to bottom, #777, #333);
+  transform: scale(1.05);
+}
+
+.drawing-canvas {
+  width: 100%;
+  height: 32rem;
+  background: white;
+  cursor: crosshair;
+  border-radius: 8px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.Drawing-button {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(to right, #ff007f, #800080);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.1s;
+}
+
+.Drawing-button:hover {
+  background: linear-gradient(to right, #d1006d, #5a005a);
+  transform: scale(1.05);
 }
