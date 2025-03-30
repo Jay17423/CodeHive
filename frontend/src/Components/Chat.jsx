@@ -1,25 +1,21 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addMessage, clearMessages } from "../Slice/GroupChat";
 
-const Chat = ({
-  socket,
-  roomId,
-  userName,
-  messages,
-  setMessages,
-  toggleChat,
-}) => {
+const Chat = ({ socket, roomId, userName, toggleChat }) => {
   const [message, setMessage] = useState("");
+  const dispatch = useDispatch();
+  const messages = useSelector((state) => state.groupChat.messages);
 
   const sendMessage = () => {
     if (message.trim()) {
       socket.emit("chatMessage", { roomId, userName, message });
-      setMessage("");
+      setMessage(""); // Clear input after sending
     }
   };
-
-  //  Function to clear all messages
+  // Function to clear all messages
   const clearChat = () => {
-    setMessages([]); // Clear messages state
+    dispatch(clearMessages()); // Clear messages from Redux
   };
 
   return (
@@ -28,18 +24,8 @@ const Chat = ({
       <div className="chatbox-header">
         Chat Room
         <div className="chatbox-buttons">
-          <button
-            className="chatbox-clear"
-            onClick={clearChat}
-          >
-            🗑
-          </button>
-          <button
-            className="chatbox-close"
-             onClick={toggleChat}
-          >
-            ✖
-          </button>
+          <button className="chatbox-clear" onClick={clearChat}>🗑</button>
+          <button className="chatbox-close" onClick={toggleChat}>✖</button>
         </div>
       </div>
 
@@ -49,17 +35,13 @@ const Chat = ({
           <p className="chatbox-empty">No messages yet</p>
         ) : (
           messages.map((msg, index) => (
-            <p
-              key={index}
-              className={`chat-message ${
-                msg.userName === userName ? "sent" : "received"
-              }`}
-            >
+            <p key={index} className={`chat-message ${msg.userName === userName ? "sent" : "received"}`}>
               <strong>{msg.userName}: </strong> {msg.message}
             </p>
           ))
         )}
       </div>
+
       {/* Chat Input */}
       <div className="chatbox-input-container">
         <input
@@ -69,9 +51,7 @@ const Chat = ({
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
         />
-        <button className="chatbox-send-button" onClick={sendMessage}>
-          ➤
-        </button>
+        <button className="chatbox-send-button" onClick={sendMessage}>➤</button>
       </div>
     </div>
   );

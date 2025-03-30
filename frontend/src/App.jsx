@@ -10,6 +10,7 @@ import CodeEditor from "./Components/CodeEditor";
 import OutputConsole from "./Components/OutputConsole";
 import AskAi from "./Components/AskAi";
 import Chat from "./Components/Chat";
+import { addMessage } from "./Slice/GroupChat";
 
 const socket = io("http://localhost:5050");
 
@@ -26,18 +27,16 @@ const App = () => {
   const [output, setOutput] = useState("");
   const [showAskAi, setShowAskAi] = useState(false);
   const [aiResponse, setAiResponse] = useState({ question: "", response: "" });
-  // console.log(aiResponse);
   const [messages, setMessages] = useState([]);
   const [showChat, setShowChat] = useState(false);
 
   const toggleChat = () => {
     setShowChat((prev) => !prev);
-    console.log("Chat visibility:", !showChat);
   };
 
   useEffect(() => {
     const handleChatMessage = (chatData) => {
-      setMessages((prevMessages) => [...prevMessages, chatData]);
+      dispatch(addMessage(chatData));
     };
 
     socket.off("chatMessage"); // ✅ First, remove any existing listener
