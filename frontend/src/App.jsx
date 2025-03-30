@@ -11,6 +11,7 @@ import OutputConsole from "./Components/OutputConsole";
 import AskAi from "./Components/AskAi";
 import Chat from "./Components/Chat";
 import { addMessage } from "./Slice/GroupChat";
+import DrawingBoard from "./Components/DrawingBoard";
 
 const socket = io("http://localhost:5050");
 
@@ -29,9 +30,15 @@ const App = () => {
   const [aiResponse, setAiResponse] = useState({ question: "", response: "" });
   const [messages, setMessages] = useState([]);
   const [showChat, setShowChat] = useState(false);
+  const [Board, setBoard] = useState(false);
 
   const toggleChat = () => {
     setShowChat((prev) => !prev);
+  };
+
+  const toggleBoard = () => {
+    setBoard((prev) => !prev);
+    console.log(Board);
   };
 
   useEffect(() => {
@@ -116,8 +123,6 @@ const App = () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
-
-  
 
   const joinRoom = () => {
     if (roomId && userName) {
@@ -208,6 +213,7 @@ const App = () => {
     <div className="editor-container">
       <Sidebar
         toggleChat={() => setShowChat(!showChat)}
+        toggleBoard={() => setBoard(!Board)}
         roomId={roomId}
         users={users}
         typing={typing}
@@ -217,6 +223,7 @@ const App = () => {
         downloadCode={downloadCode}
         language={language}
         handleLanguageChange={handleLanguageChange}
+        Board={Board}
       />
 
       {showChat && (
@@ -233,21 +240,35 @@ const App = () => {
       )}
 
       <div className="editor-wrapper">
+        {Board && (
+          <div className="drawing-board-container-main">
+            <DrawingBoard
+              toggleBoard={toggleBoard}
+              roomId={roomId}
+              socket={socket}
+            />
+          </div>
+        )}
         <div className="editor-header">
           <button className="ask-ai-button" onClick={toggleAskAi}>
             {showAskAi ? "Hide" : "Ask AI"}
           </button>
         </div>
-        <CodeEditor
-          language={language}
-          code={code}
-          handleCodeChange={handleCodeChange}
-        />
+        {!Board && (
+          <CodeEditor
+            language={language}
+            code={code}
+            handleCodeChange={handleCodeChange}
+          />
+        )}
+
         <div className="run-container">
-          <button className="run-btn" onClick={runCode}>
-            Execute
-          </button>
-          <OutputConsole output={output} />
+          {!Board && (
+            <button className="run-btn" onClick={runCode}>
+              Execute
+            </button>
+          )}
+          {!Board && <OutputConsole output={output} />}
         </div>
       </div>
 
