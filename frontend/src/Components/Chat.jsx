@@ -9,36 +9,43 @@ const Chat = ({ socket, roomId, userName, messages, toggleChat }) => {
       setMessage("");
     }
   };
-
+  
+  
   return (
-    <div className="chat-container chat-visible">
+    <div className="chatbox-container chat-visible">
       {/* Chat Header */}
-      <div className="chat-header">
+      <div className="chatbox-header">
         Chat Room
-        <button className="chat-close" onClick={toggleChat}>
+        <button className="chatbox-close" onClick={toggleChat}>
           ✖
         </button>
       </div>
 
       {/* Chat Messages */}
-      <div className="chat-messages">
+      <div className="chatbox-messages">
         {messages.map((msg, index) => (
-          <p key={index} className="chat-message">
-            <strong>{msg.userName}: </strong> {msg.message}
-          </p>
+          <div
+            key={index}
+            className={`chat-message ${
+              msg.userName === userName ? "sent" : "received"
+            }`}
+          >
+            <strong>{msg.userName}</strong>
+            <p>{msg.message}</p>
+          </div>
         ))}
       </div>
 
       {/* Chat Input */}
-      <div className="chat-input-container">
+      <div className="chatbox-input-container">
         <input
           type="text"
-          className="chat-input"
+          className="chatbox-input"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
         />
-        <button className="chat-send-button" onClick={sendMessage}>
+        <button className="chatbox-send-button" onClick={sendMessage}>
           ➤
         </button>
       </div>

@@ -371,6 +371,22 @@ body {
 .download-button:hover {
   background-color: #7c34ce;
 }
+.chatbox-button {
+  margin-top: 1rem;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: rgb(70, 196, 231);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+  .chatbox-button:hover{
+    background-color: #a534ce;
+  }
 
 /* Container for shimmer effect */
 .shimmer-container {
@@ -451,93 +467,187 @@ body {
 }
 
 
-/*    */
-/* Chat Container */
-.chat-container {
+/* Chatbox Container */
+
+.chatbox-container {
   position: fixed;
-  /* Ensures it's always on top */
   right: 20px;
-  /* Keeps it in the right place */
   bottom: 20px;
-  height: 80vh;
-  width: 350px;
-  background: #ffffff;
-  border: 2px solid #007bff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  height: 75vh;
+  width: 370px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   z-index: 1000;
-  /* Higher z-index to stay on top */
-  border-radius: 10px;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
-/* Remove any unnecessary background behind the chatbox */
-.chat-container::before {
-  display: none;
-  /* If there's an extra background layer, hide it */
+/* Smooth Entrance */
+.chatbox-container.chat-visible {
+  transform: scale(1);
+  opacity: 1;
 }
 
-/* Adjust Parent Container (If exists) */
-.chat-wrapper {
-  background: transparent !important;
-  /* Ensure no white background */
-  position: relative;
-  /* Avoid unnecessary positioning issues */
+.chatbox-container.chat-hidden {
+  transform: scale(0.9);
+  opacity: 0;
 }
 
 /* Chat Header */
-.chat-header {
-  background: #007bff;
+.chatbox-header {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
   color: white;
-  padding: 15px;
+  padding: 18px;
   font-size: 18px;
   font-weight: bold;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Chat Close Button */
+.chatbox-close {
+  background-color: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: white;
+  transition: color 0.3s ease-in-out, transform 0.2s;
+}
+
+.chatbox-close:hover {
+  color: #ff5555;
+  transform: rotate(90deg);
 }
 
 /* Chat Messages */
-.chat-messages {
+.chatbox-messages {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 10px;
-  background: #f8f9fa;
-  border-bottom: 2px solid #ddd;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #007bff transparent;
 }
 
-/* Input Box */
-.chat-input-container {
+.chatbox-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chatbox-messages::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+/* Message Bubble */
+.chat-message {
+  max-width: 75%;
+  padding: 12px 16px;
+  border-radius: 15px;
+  font-size: 14px;
+  word-wrap: break-word;
+  position: relative;
+  display: inline-block;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+/* Sent Messages */
+.chat-message.sent {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 3px 8px rgba(0, 123, 255, 0.3);
+}
+
+/* Received Messages */
+.chat-message.received {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 3px 8px rgba(255, 255, 255, 0.2);
+}
+
+/* Message Fade-in Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Chat Input Section */
+.chatbox-input-container {
   display: flex;
-  padding: 10px;
-  background: white;
-  border-top: 2px solid #ddd;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  align-items: center;
 }
 
 /* Input Field */
-.chat-input {
+.chatbox-input {
   flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 20px;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
   outline: none;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  transition: all 0.3s ease-in-out;
+}
+
+.chatbox-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.chatbox-input:focus {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 /* Send Button */
-.chat-send-button {
-  background: #007bff;
+.chatbox-send-button {
+  background: linear-gradient(135deg, #007bff, #00bfff);
   color: white;
   border: none;
-  padding: 10px 15px;
-  border-radius: 20px;
+  padding: 12px;
+  border-radius: 50%;
   cursor: pointer;
-  margin-left: 8px;
+  margin-left: 10px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease-in-out, transform 0.2s;
 }
 
-.chat-send-button:hover {
-  background: #0056b3;
+.chatbox-send-button:hover {
+  background: linear-gradient(135deg, #00bfff, #007bff);
+  transform: scale(1.1);
+}
+
+/* Neon Glow Effect */
+.chatbox-container,
+.chatbox-input,
+.chatbox-send-button {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }

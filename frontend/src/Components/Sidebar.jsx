@@ -56,7 +56,7 @@ const Sidebar = ({
       </button>
 
       {/* Chat Toggle Button */}
-      <button className="chat-button" onClick={toggleChat}>
+      <button className="chatbox-button" onClick={toggleChat}>
         💬 Chat
       </button>
       
