@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import Logo from "../assets/logo.png";
 
+
 const Sidebar = ({
   roomId,
   users,
@@ -12,6 +13,8 @@ const Sidebar = ({
   language,
   handleLanguageChange,
   toggleChat,
+  toggleBoard,
+  Board,
 }) => {
   return (
     <div className="sidebar">
@@ -58,6 +61,9 @@ const Sidebar = ({
       {/* Chat Toggle Button */}
       <button className="chatbox-button" onClick={toggleChat}>
         💬 Chat
+      </button>
+      <button className="Drawing-button" onClick={toggleBoard}>
+        {Board ? "🎨 Stop Drawing" : "🎨 Start Drawing"}
       </button>
       
     </div>
