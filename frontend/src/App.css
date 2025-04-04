@@ -844,5 +844,127 @@ body {
 
 .Drawing-button:hover {
   background: linear-gradient(to right, #d1006d, #5a005a);
+}
+
+.random-room{
+  margin-top: 10px;
+  color: rgb(151, 142, 142);
+  cursor: pointer;
+}
+
+.member-button{
+  /* margin-top: 1rem; */
+  width: 100%;
+  padding: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  background-color: #7e1f7e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  &:hover {
+    background-color: rgb(142, 69, 151);
+  }
+
+}
+
+/* Member Overlay Styles */
+/* Member Overlay with Gradient Background */
+.member-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px; /* same as sidebar width */
+  height: 100%;
+  background: linear-gradient(135deg, #000000, #434343);
+  color: #ecf0f1;
+  padding: 1.5rem;
+  z-index: 9999; /* ensures it stays above other elements */
+  overflow-y: auto;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Close Button Positioned at Top Right as a Cross */
+.close-overlay-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #ecf0f1;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Member Container and Title */
+.member-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2.5rem; /* leave room for the close button */
+}
+.member-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+/* Grid Layout for Two Users per Row */
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  width: 100%;
+}
+
+/* User Card Styling */
+.user-card {
+  padding: 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+.user-card:hover {
   transform: scale(1.05);
+}
+
+/* Profile Container & Icon */
+.profile-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+
+}
+
+.profile-icon {
+  width: 70px;
+  height: 60px;
+  border-radius: 50%;
+  background: url('./assets/image.png') no-repeat center center/cover;
+}
+
+
+
+/* Online Status Indicator */
+.online-indicator {
+  width: 12px;
+  height: 12px;
+  background-color: #2ecc71; /* bright green */
+  border: 2px solid #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+/* User Name Styling */
+.user-name {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: bold;
 }
