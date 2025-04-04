@@ -1,5 +1,4 @@
-// App.js
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import io from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +19,7 @@ const App = () => {
   const { code, language, roomId, version } = useSelector(
     (state) => state.code
   );
+
   const [joined, setJoined] = useState(false);
   const [userName, setUserName] = useState("");
   const [copySuccess, setCopySuccess] = useState("");
@@ -46,13 +46,13 @@ const App = () => {
       dispatch(addMessage(chatData));
     };
 
-    socket.off("chatMessage"); // ✅ First, remove any existing listener
-    socket.on("chatMessage", handleChatMessage); // ✅ Add a fresh one
+    socket.off("chatMessage"); // Remove any existing listener
+    socket.on("chatMessage", handleChatMessage); // Add a fresh one
 
     return () => {
-      socket.off("chatMessage", handleChatMessage); // ✅ Proper cleanup
+      socket.off("chatMessage", handleChatMessage); // Cleanup listener
     };
-  }, []); // ✅ Empty dependency array ensures it runs only once
+  }, [dispatch]);
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -112,7 +112,7 @@ const App = () => {
       socket.off("codeResponse");
       socket.off("aiResponse");
     };
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -174,9 +174,7 @@ const App = () => {
 
   const downloadCode = () => {
     const hardcodedData = `// Room ID: ${roomId}\n // User Name: ${userName}\n`;
-
     const finalCode = hardcodedData + code;
-
     const blob = new Blob([finalCode], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -188,9 +186,7 @@ const App = () => {
       cpp: "cpp",
       java: "java",
     };
-
     a.download = `code.${extensions[language] || "txt"}`;
-
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -261,7 +257,6 @@ const App = () => {
             handleCodeChange={handleCodeChange}
           />
         )}
-
         <div className="run-container">
           {!Board && (
             <button className="run-btn" onClick={runCode}>
@@ -271,7 +266,6 @@ const App = () => {
           {!Board && <OutputConsole output={output} />}
         </div>
       </div>
-
       {showAskAi && (
         <AskAi aiResponse={aiResponse} onSendQuestion={handleAskAI} />
       )}
