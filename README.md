@@ -10,7 +10,8 @@ Setup successful.
 # In Backend  
 Node.js, Express.js, Socket.io.  
 Setup successful.  
-Socket.io setup done.  
+Socket.io setup done.
+setupdone  
 
 # For Setup the Code  
 In root folder, run:  

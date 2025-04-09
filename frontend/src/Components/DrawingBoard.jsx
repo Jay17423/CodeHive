@@ -60,7 +60,7 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = lineWidth * 2;
       } else if (tool === 'highlighter') {
-        ctx.strokeStyle = color + '80';
+        ctx.strokeStyle = color + '200';
         ctx.lineWidth = lineWidth * 2;
       }
       ctx.lineTo(x, y);
