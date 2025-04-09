@@ -1,4 +1,17 @@
 import React, { useRef, useState, useEffect } from 'react';
+import {
+  FaPen,
+  FaEraser,
+  FaHighlighter,
+  FaSquare,
+  FaCircle,
+  FaSlash,
+  FaUndo,
+  FaTrash,
+  FaCamera,
+  FaTimes,
+} from "react-icons/fa";
+
 
 const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
   const canvasRef = useRef(null);
@@ -12,21 +25,24 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
   // Create a ref to always have the latest undoStack
   const undoStackRef = useRef(undoStack);
 
+  // icons for tools
+  const tools = [
+    { id: "pen", name: "Pen", icon: <FaPen /> },
+    { id: "eraser", name: "Eraser", icon: <FaEraser /> },
+    { id: "highlighter", name: "Highlighter", icon: <FaHighlighter /> },
+    { id: "rectangle", name: "Rectangle", icon: <FaSquare /> },
+    { id: "circle", name: "Circle", icon: <FaCircle /> },
+    { id: "line", name: "Line", icon: <FaSlash /> },
+  ];
+
+
   // Update the ref whenever undoStack changes
   useEffect(() => {
     undoStackRef.current = undoStack;
   }, [undoStack]);
 
   const colors = ['#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff', '#ffa500', '#a52a2a'];
-  const tools = [
-    { id: 'pen', name: 'Pen' },
-    { id: 'eraser', name: 'Eraser' },
-    { id: 'highlighter', name: 'Highlighter' },
-    { id: 'rectangle', name: 'Rectangle' },
-    { id: 'circle', name: 'Circle' },
-    { id: 'line', name: 'Line' }
-  ];
-
+  
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -281,47 +297,58 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
       <div className="toolbar">
         <div className="color-picker">
           {colors.map((c) => (
-            <button 
-              key={c} 
-              className="color-option" 
-              style={{ backgroundColor: c }} 
-              onClick={() => setColor(c)} 
+            <button
+              key={c}
+              className={`color-option ${color === c ? "active" : ""}`}
+              data-color={c}
+              style={{ backgroundColor: c }}
+              onClick={() => setColor(c)}
             />
           ))}
         </div>
-        
+        <div className="actions">
+          <button onClick={undo}>
+            <FaUndo style={{ marginRight: "6px" }} />
+            Undo
+          </button>
+          <button onClick={clearCanvas}>
+            <FaTrash style={{ marginRight: "6px" }} />
+            Clear
+          </button>
+          <button onClick={takeScreenshot}>
+            <FaCamera style={{ marginRight: "6px" }} />
+            Screenshot
+          </button>
+          <button onClick={toggleBoard}>
+            <FaTimes style={{ marginRight: "6px" }} />
+            Close
+          </button>
+        </div>
         <div className="tool-selection">
           {tools.map((t) => (
-            <button 
-              key={t.id} 
-              className={`tool-btn ${tool === t.id ? 'active' : ''}`} 
+            <button
+              key={t.id}
+              className={`tool-btn ${tool === t.id ? "active" : ""}`}
               onClick={() => setTool(t.id)}
             >
-              {t.name}
+              {t.icon} {t.name}
             </button>
           ))}
         </div>
-        
+
         <div className="brush-size">
           <label>Size:</label>
-          <input 
-            type="range" 
-            min="1" 
-            max="20" 
-            value={lineWidth} 
-            onChange={(e) => setLineWidth(parseInt(e.target.value))} 
+          <input
+            type="range"
+            min="1"
+            max="20"
+            value={lineWidth}
+            onChange={(e) => setLineWidth(parseInt(e.target.value))}
           />
           <span>{lineWidth}</span>
         </div>
-        
-        <div className="actions">
-          <button onClick={undo}>Undo</button>
-          <button onClick={clearCanvas}>Clear</button>
-          <button onClick={takeScreenshot}>Screenshot</button>
-          <button onClick={toggleBoard}>Close</button>
-        </div>
       </div>
-      
+
       <canvas
         ref={canvasRef}
         className="drawing-canvas"

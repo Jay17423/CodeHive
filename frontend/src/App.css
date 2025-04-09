@@ -703,6 +703,8 @@ body {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
+
+
 /* Drawing Board */
 .drawing-board-container-main {
   background-color: #121212;
@@ -749,6 +751,18 @@ body {
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.color-option.active {
+  border-color: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+  transform: scale(1.25);
+}
+
+/* Special highlight for white */
+.color-option.active[data-color="#ffffff"] {
+  border-color: #000000;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 .color-option:hover {
