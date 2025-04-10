@@ -30,13 +30,37 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
 
   // icons for tools
   const tools = [
-    { id: "pen", name: "Pen", icon: <FaPen /> },
-    { id: "eraser", name: "Eraser", icon: <FaEraser /> },
-    { id: "highlighter", name: "Highlighter", icon: <FaHighlighter /> },
-    { id: "rectangle", name: "Rectangle", icon: <FaSquare /> },
-    { id: "circle", name: "Circle", icon: <FaCircle /> },
-    { id: "line", name: "Line", icon: <FaSlash /> },
-    { id: "pan", name: "Pan", icon: <FaHandPaper /> }, 
+    { id: "pen", name: "Pen", icon: <FaPen style={{ color: "#007bff" }} /> },
+    {
+      id: "eraser",
+      name: "Eraser",
+      icon: <FaEraser style={{ color: "#6c757d" }} />,
+    },
+    {
+      id: "highlighter",
+      name: "Highlighter",
+      icon: <FaHighlighter style={{ color: "#ffc107" }} />,
+    },
+    {
+      id: "rectangle",
+      name: "Rectangle",
+      icon: <FaSquare style={{ color: "#28a745" }} />,
+    },
+    {
+      id: "circle",
+      name: "Circle",
+      icon: <FaCircle style={{ color: "#6f42c1" }} />,
+    },
+    {
+      id: "line",
+      name: "Line",
+      icon: <FaSlash style={{ color: "#fd7e14" }} />,
+    },
+    {
+      id: "pan",
+      name: "Pan",
+      icon: <FaHandPaper style={{ color: "#17a2b8" }} />,
+    },
   ];
 
 
@@ -348,21 +372,17 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
         </div>
         <div className="actions">
           <button onClick={undo}>
-            <FaUndo style={{ marginRight: "6px" }} />
-            Undo
-          </button>
-          <button onClick={clearCanvas}>
-            <FaTrash style={{ marginRight: "6px" }} />
-            Clear
-          </button>
-          <button onClick={takeScreenshot}>
-            <FaCamera style={{ marginRight: "6px" }} />
-            Screenshot
-          </button>
-          <button onClick={toggleBoard}>
-            <FaTimes style={{ marginRight: "6px" }} />
-            Close
-          </button>
+                      <FaUndo style={{ color: "#0d6efd", marginRight: "6px" }} /> Undo
+                    </button>
+                    <button onClick={clearCanvas}>
+                      <FaTrash style={{ color: "#dc3545", marginRight: "6px" }} /> Clear
+                    </button>
+                    <button onClick={takeScreenshot}>
+                      <FaCamera style={{ color: "#20c997", marginRight: "6px" }} /> Screenshot
+                    </button>
+                    <button onClick={toggleBoard}>
+                      <FaTimes style={{ color: "red", marginRight: "6px" }} /> Close
+                    </button>
         </div>
         <div className="tool-selection">
           {tools.map((t) => (

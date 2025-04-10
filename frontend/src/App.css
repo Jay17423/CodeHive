@@ -813,7 +813,8 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: white
+  font-weight: 80;
+  color: rgb(239, 243, 30)
 }
 
 .brush-size input {
@@ -990,4 +991,16 @@ body {
   margin-top: 0.5rem;
   font-size: 0.9rem;
   font-weight: bold;
+}
+
+.tool-btn.active {
+  background: #fff;
+  color: #000;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(0, 123, 255, 0.5);
+  transform: scale(1.08);
+}
+
+.tool-btn:hover svg {
+  transform: scale(1.2);
+  transition: transform 0.2s ease;
 }
