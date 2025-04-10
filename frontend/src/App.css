@@ -796,6 +796,14 @@ body {
   transform: scale(1.05);
 }
 
+.drawing-canvas.pan-mode {
+  cursor: grab;
+}
+
+.drawing-canvas.pan-mode:active {
+  cursor: grabbing;
+}
+
 .tool-btn.active {
   background: #007bff;
   color: white;
@@ -805,6 +813,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
+  color: white
 }
 
 .brush-size input {
@@ -814,7 +823,7 @@ body {
 .actions {
   display: flex;
   gap: 6px;
-  margin-left: 260px;
+  /* margin-left: 260px; */
 }
 
 .actions button {

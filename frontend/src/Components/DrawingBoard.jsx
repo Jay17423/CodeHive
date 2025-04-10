@@ -10,6 +10,7 @@ import {
   FaTrash,
   FaCamera,
   FaTimes,
+  FaHandPaper,
 } from "react-icons/fa";
 
 
@@ -21,6 +22,8 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
   const [tool, setTool] = useState('pen');
   const [startPoint, setStartPoint] = useState(null);
   const [undoStack, setUndoStack] = useState([]);
+  const [isPanning, setIsPanning] = useState(false);
+  const [lastPanPosition, setLastPanPosition] = useState(null);
   
   // Create a ref to always have the latest undoStack
   const undoStackRef = useRef(undoStack);
@@ -33,6 +36,7 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
     { id: "rectangle", name: "Rectangle", icon: <FaSquare /> },
     { id: "circle", name: "Circle", icon: <FaCircle /> },
     { id: "line", name: "Line", icon: <FaSlash /> },
+    { id: "pan", name: "Pan", icon: <FaHandPaper /> }, 
   ];
 
 
@@ -158,11 +162,19 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
   };
 
   const startDrawing = (e) => {
+
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
+    if (tool === "pan" ) {
+         setIsPanning(true);
+      setLastPanPosition({ x, y });
+      return;
+
+      };
+
     const ctx = canvas.getContext('2d');
     setIsDrawing(true);
 
@@ -176,33 +188,61 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
   };
 
   const draw = (e) => {
-    if (!isDrawing) return;
     
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    const ctx = canvas.getContext('2d');
     
-    if (tool === 'pen' || tool === 'eraser' || tool === 'highlighter') {
-      if (tool === 'pen') {
-        ctx.strokeStyle = color;
-        ctx.lineWidth = lineWidth;
-      } else if (tool === 'eraser') {
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = lineWidth * 2;
-      } else if (tool === 'highlighter') {
-        ctx.strokeStyle = color + '80';
-        ctx.lineWidth = lineWidth * 2;
-      }
+    if (tool === "pan" && isPanning && lastPanPosition ) {
+      const dx = x - lastPanPosition.x;
+      const dy = y - lastPanPosition.y;
+
+      const ctx = canvas.getContext("2d");
+      const image = new Image();
+      image.src = canvas.toDataURL();
+      image.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(image, dx, dy);
+      };
+
+      setLastPanPosition({ x, y });
+      return;
       
-      ctx.lineTo(x, y);
-      ctx.stroke();
-      socket.emit('draw', { roomId, x, y, color, lineWidth, tool });
     }
+    
+      if (!isDrawing) return;
+      const ctx = canvas.getContext("2d");
+
+      if (["pen", "eraser", "highlighter"].includes(tool)) {
+        const ctx = canvas.getContext("2d");
+
+        if (tool === "pen") {
+          ctx.strokeStyle = color;
+          ctx.lineWidth = lineWidth;
+        } else if (tool === "eraser") {
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = lineWidth * 2;
+        } else if (tool === "highlighter") {
+          ctx.strokeStyle = color + "80";
+          ctx.lineWidth = lineWidth * 2;
+        }
+
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        socket.emit("draw", { roomId, x, y, color, lineWidth, tool });
+      }
   };
 
   const finishDrawing = (e) => {
+
+    if (tool === "pan") {
+       setIsPanning(false);
+       setLastPanPosition(null);
+       saveDrawing();
+       return;
+    }
+
     if (!isDrawing) return;
     
     const canvas = canvasRef.current;
@@ -351,7 +391,7 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
 
       <canvas
         ref={canvasRef}
-        className="drawing-canvas"
+        className={`drawing-canvas ${tool === "pan" ? "pan-mode" : ""}`}
         onMouseDown={startDrawing}
         onMouseMove={draw}
         onMouseUp={finishDrawing}
