@@ -7,15 +7,21 @@ import http from "http";
 import { Server } from "socket.io";
 import OpenAI from "openai";
 import connectDB from "./config/database.js";
-import { connect } from "http2";
+import getRoomInfo from "./routes/getRoomInfo.js";
+
+
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
+app.use(express.json());
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const server = http.createServer(app);
+
+app.use("/",getRoomInfo);
 
 const io = new Server(server, {
   cors: {

@@ -6,10 +6,6 @@ const roomSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    roomName: {
-      type: String,
-      required: true,
-    },
     members: {
       type: [String],
       default: [],
@@ -50,3 +46,6 @@ const roomSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+const RoomModel = mongoose.model("Room", roomSchema);
+export default RoomModel;
