@@ -6,6 +6,8 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import OpenAI from "openai";
+import connectDB from "./config/database.js";
+import { connect } from "http2";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,7 +37,10 @@ io.on("connection", (socket) => {
     if (currentRoom) {
       socket.leave(currentRoom);
       rooms.get(currentRoom).users.delete(currentUser);
-      io.to(currentRoom).emit("userJoined", Array.from(rooms.get(currentRoom).users));
+      io.to(currentRoom).emit(
+        "userJoined",
+        Array.from(rooms.get(currentRoom).users)
+      );
     }
 
     // Update the current room and user
@@ -70,7 +75,10 @@ io.on("connection", (socket) => {
     if (currentRoom && currentUser) {
       // Remove the user from the room's Set
       rooms.get(currentRoom).users.delete(currentUser);
-      io.to(currentRoom).emit("userJoined", Array.from(rooms.get(currentRoom).users));
+      io.to(currentRoom).emit(
+        "userJoined",
+        Array.from(rooms.get(currentRoom).users)
+      );
 
       // Leave the room and reset currentRoom and currentUser
       socket.leave(currentRoom);
@@ -112,11 +120,24 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("remoteShape", ({ roomId, shape, startX, startY, endX, endY, color, lineWidth }) => {
-    if (rooms.has(roomId)) {
-      socket.to(roomId).emit("remoteShape", { shape, startX, startY, endX, endY, color, lineWidth });
+  socket.on(
+    "remoteShape",
+    ({ roomId, shape, startX, startY, endX, endY, color, lineWidth }) => {
+      if (rooms.has(roomId)) {
+        socket
+          .to(roomId)
+          .emit("remoteShape", {
+            shape,
+            startX,
+            startY,
+            endX,
+            endY,
+            color,
+            lineWidth,
+          });
+      }
     }
-  });
+  );
 
   // Listen for typing events and broadcast them to the room
   socket.on("userTyping", ({ roomId, userName }) => {
@@ -147,11 +168,11 @@ io.on("connection", (socket) => {
         io.to(roomId).emit("codeResponse", response.data);
       } catch (error) {
         console.error("Compilation error:", error);
-        io.to(roomId).emit("codeResponse", { 
-          run: { 
+        io.to(roomId).emit("codeResponse", {
+          run: {
             output: "Error compiling code. Please try again.",
-            stderr: error.message 
-          } 
+            stderr: error.message,
+          },
         });
       }
     }
@@ -191,10 +212,10 @@ io.on("connection", (socket) => {
   // Chat room events
   socket.on("chatMessage", ({ roomId, userName, message }) => {
     if (rooms.has(roomId)) {
-      const chatData = { 
-        userName, 
-        message, 
-        timestamp: new Date().toISOString() 
+      const chatData = {
+        userName,
+        message,
+        timestamp: new Date().toISOString(),
       };
       io.to(roomId).emit("chatMessage", chatData);
     }
@@ -205,13 +226,25 @@ io.on("connection", (socket) => {
     if (currentRoom && currentUser) {
       // Remove the user from the room's Set
       rooms.get(currentRoom).users.delete(currentUser);
-      io.to(currentRoom).emit("userJoined", Array.from(rooms.get(currentRoom).users));
+      io.to(currentRoom).emit(
+        "userJoined",
+        Array.from(rooms.get(currentRoom).users)
+      );
     }
     console.log("User Disconnected", socket.id);
   });
 });
 
 const port = process.env.PORT || 5000;
-server.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+
+connectDB()
+  .then(() => {
+    console.log("Database connected Successfully");
+    server.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.log("DataBase cannot be connected");
+    console.log(err);
+  });

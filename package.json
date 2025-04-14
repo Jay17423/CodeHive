@@ -17,6 +17,7 @@
     "axios": "^1.8.4",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "mongoose": "^8.13.2",
     "openai": "^4.87.4",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.4.0",
