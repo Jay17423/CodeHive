@@ -37,6 +37,12 @@ io.on("connection", (socket) => {
   let currentRoom = null;
   let currentUser = null;
 
+  // Handle typing event
+  socket.on("userTyping", ({ roomId, userName }) => {
+    socket.to(roomId).emit("userTyping", { userName });
+  });
+
+  
   // Listen for the "join" event when a user joins a room
   socket.on("join", ({ roomId, userName }) => {
     // If the user is already in a room, leave it and remove the user from the room's Set

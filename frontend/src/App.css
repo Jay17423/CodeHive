@@ -614,6 +614,62 @@ body {
   animation: fadeIn 0.4s ease-in-out;
 }
 
+/* Typing Indicator */
+.chatbox-typing {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  background: rgba(0, 123, 255, 0.1);
+  border-radius: 12px;
+  font-size: 14px;
+  color: #e3eaf3;
+  font-weight: bold;
+  max-width: fit-content;
+  margin: 5px 0;
+}
+
+/* Typing Dots */
+.typing-dots {
+  display: flex;
+  gap: 3px;
+}
+
+/* Each Dot */
+.typing-dots span {
+  width: 6px;
+  height: 6px;
+  background-color: #007bff;
+  border-radius: 50%;
+  display: inline-block;
+  animation: typingBlink 1.5s infinite;
+}
+
+/* Delay Each Dot */
+.typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Keyframes for Dot Animation */
+@keyframes typingBlink {
+  0% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.3;
+  }
+}
+
+
 /* Sent Messages */
 .chat-message.sent {
   align-self: flex-end;

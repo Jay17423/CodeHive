@@ -22,11 +22,13 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
   const [tool, setTool] = useState('pen');
   const [startPoint, setStartPoint] = useState(null);
   const [undoStack, setUndoStack] = useState([]);
+  const [redoStack, setRedoStack] = useState([]);
   const [isPanning, setIsPanning] = useState(false);
   const [lastPanPosition, setLastPanPosition] = useState(null);
   
   // Create a ref to always have the latest undoStack
   const undoStackRef = useRef(undoStack);
+  const redoStackRef = useRef(redoStack);
 
   // icons for tools
   const tools = [
@@ -67,9 +69,10 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
   // Update the ref whenever undoStack changes
   useEffect(() => {
     undoStackRef.current = undoStack;
-  }, [undoStack]);
+    redoStackRef.current = redoStack;
+  }, [undoStack, redoStack]);
 
-  const colors = ['#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff', '#ffa500', '#a52a2a'];
+  const colors = ['#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff', '#ffa500'];
   
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -183,6 +186,7 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
   const saveDrawing = () => {
     const canvas = canvasRef.current;
     setUndoStack((prevStack) => [...prevStack, canvas.toDataURL()]);
+    setRedoStack([]); 
   };
 
   const startDrawing = (e) => {
@@ -341,9 +345,47 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
     socket.emit('drawClear', { roomId });
   };
 
+  // undo function
   const undo = () => {
-    if (undoStack.length > 0) {
-      socket.emit('drawUndo', { roomId });
+    if (undoStack.length > 1) {
+      const newUndoStack = [...undoStack];
+      const last = newUndoStack.pop();
+
+      setRedoStack((prev) => [...prev, last]);
+
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+
+      const img = new Image();
+      img.src = newUndoStack[newUndoStack.length - 1];
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      };
+
+      setUndoStack(newUndoStack);
+      socket.emit("drawUndo", { roomId });
+    }
+  };
+
+  // redo function
+  const redo = () => {
+    if (redoStack.length > 0) {
+      const newRedoStack = [...redoStack];
+      const redoImage = newRedoStack.pop();
+
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+
+      const img = new Image();
+      img.src = redoImage;
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      };
+
+      setUndoStack((prev) => [...prev, redoImage]);
+      setRedoStack(newRedoStack);
     }
   };
 
@@ -372,17 +414,29 @@ const DrawingBoard = ({ toggleBoard, roomId, socket }) => {
         </div>
         <div className="actions">
           <button onClick={undo}>
-                      <FaUndo style={{ color: "#0d6efd", marginRight: "6px" }} /> Undo
-                    </button>
-                    <button onClick={clearCanvas}>
-                      <FaTrash style={{ color: "#dc3545", marginRight: "6px" }} /> Clear
-                    </button>
-                    <button onClick={takeScreenshot}>
-                      <FaCamera style={{ color: "#20c997", marginRight: "6px" }} /> Screenshot
-                    </button>
-                    <button onClick={toggleBoard}>
-                      <FaTimes style={{ color: "red", marginRight: "6px" }} /> Close
-                    </button>
+            <FaUndo style={{ color: "#0d6efd", marginRight: "6px" }} /> Undo
+          </button>
+          <button onClick={redo}>
+            <FaUndo
+              style={{
+                transform: "scaleX(-1)",
+                color: "#198754",
+                marginRight: "6px",
+              }}
+            />{" "}
+            Redo
+          </button>
+
+          <button onClick={clearCanvas}>
+            <FaTrash style={{ color: "#dc3545", marginRight: "6px" }} /> Clear
+          </button>
+          <button onClick={takeScreenshot}>
+            <FaCamera style={{ color: "#20c997", marginRight: "6px" }} />{" "}
+            Screenshot
+          </button>
+          <button onClick={toggleBoard}>
+            <FaTimes style={{ color: "red", marginRight: "6px" }} /> Close
+          </button>
         </div>
         <div className="tool-selection">
           {tools.map((t) => (
