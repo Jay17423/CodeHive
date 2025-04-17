@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import io from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
-import { setCode, setLanguage, setRoomId, setVersion } from "./Slice/CodeSlice";
+import { setCode, setLanguage, setRoomId, setConsoleText } from "./Slice/CodeSlice";
 import JoinRoom from "./Components/JoinRoom";
 import Sidebar from "./Components/Sidebar";
 import CodeEditor from "./Components/CodeEditor";
@@ -25,7 +25,6 @@ const App = () => {
   const [copySuccess, setCopySuccess] = useState("");
   const [users, setUsers] = useState([]);
   const [typing, setTyping] = useState("");
-  const [output, setOutput] = useState("");
   const [showAskAi, setShowAskAi] = useState(false);
   const [aiResponse, setAiResponse] = useState({ question: "", response: "" });
   const [messages, setMessages] = useState([]);
@@ -97,7 +96,7 @@ const App = () => {
     });
 
     socket.on("codeResponse", (response) => {
-      setOutput(response.run.output);
+      dispatch(setConsoleText(response.run.output));
     });
 
     socket.on("aiResponse", (data) => {
@@ -263,7 +262,7 @@ const App = () => {
               Execute
             </button>
           )}
-          {!Board && <OutputConsole output={output} />}
+          {!Board && <OutputConsole  />}
         </div>
       </div>
       {showAskAi && (
