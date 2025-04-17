@@ -263,7 +263,7 @@
   width: 70px;
   height: 60px;
   border-radius: 50%;
-  background: url('./assets/image.png') no-repeat center center/cover;
+  background: url('../assets/image.png') no-repeat center center/cover;
 }
 
 
