@@ -68,7 +68,7 @@ io.on("connection", (socket) => {
 
   // Handle typing event
   socket.on("userTyping", ({ roomId, userName }) => {
-    socket.to(roomId).emit("userTyping", userName);
+    socket.to(roomId).emit("userTyping", { userName });
   });
 
   // Listen for the "join" event when a user joins a room
