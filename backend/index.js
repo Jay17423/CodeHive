@@ -13,7 +13,7 @@ import {
   getRoomData,
   cleanupInactiveRooms,
 } from "./service/roomService.js";
-import { log } from "console";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -338,6 +338,12 @@ io.on("connection", (socket) => {
 });
 
 const port = process.env.PORT || 5000;
+
+const __dirName = path.resolve();
+app.use(express.static(path.join(__dirName, "/frontend/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirName, "frontend", "dist", "index.html"));
+});
 
 connectDB()
   .then(() => {
