@@ -101,71 +101,100 @@ body {
 
   .sidebar {
     width: 250px;
-    padding: 1.5rem;
-    background-color: #2c3e50;
+    padding: 2rem 1.5rem;
+    background: linear-gradient(145deg, #0f0f0f, #1c1c1c);
     color: #ecf0f1;
-
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.5);
+  
     .room-info {
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      margin-bottom: 1rem;
-
+      margin-bottom: 2rem;
+  
       h2 {
-        margin-bottom: 1rem;
-        font-size: 1.2rem;
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: #ffffff;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+        margin-bottom: 0.5rem;
       }
     }
-
+  
     h3 {
-      margin-top: 1.5rem;
-      margin-bottom: 0.5rem;
-      font-size: 1rem;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+      border-bottom: 1px solid #444;
+      padding-bottom: 0.25rem;
+      color: #dcdcdc;
     }
+  
     ul {
       list-style: none;
+      padding: 0;
+  
       li {
-        padding: 0.5rem;
+        padding: 0.6rem 0.8rem;
         font-size: 0.9rem;
-        background: gray;
-        margin-top: 5px;
+        background: rgba(255, 255, 255, 0.05);
+        margin-top: 6px;
         text-transform: uppercase;
-
-        font-weight: 700;
-        border-radius: 5px;
+        font-weight: 600;
+        border-radius: 6px;
+        transition: background 0.3s;
+  
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
       }
     }
+  
     .typing-indicator {
       margin-top: 1rem;
       font-size: 1rem;
-      color: white;
+      color: #ffffff;
+      font-style: italic;
     }
+  
     .language-selector {
-      margin-top: 1rem;
+      margin-top: 1.5rem;
       width: 100%;
-      padding: 0.5rem;
-      background-color: #34495e;
-      color: white;
-      border: none;
-      border-radius: 4px;
-    }
-    .leave-button {
-      margin-top: 1rem;
-      width: 100%;
-      padding: 0.75rem;
-      background-color: rgb(156, 8, 8);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
+      padding: 0.6rem;
+      background-color: #2d2d2d;
+      color: #ffffff;
+      border: 1px solid #444;
+      border-radius: 6px;
+      transition: background 0.3s;
+  
       &:hover {
-        background-color: rgb(104, 2, 2);
+        background-color: #3b3b3b;
+      }
+    }
+  
+    .leave-button {
+      margin-top: 2rem;
+      width: 100%;
+      padding: 0.9rem;
+      background: linear-gradient(135deg, #ff0000, #8b0000);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+      transition: all 0.3s ease;
+  
+      &:hover {
+        background: linear-gradient(135deg, #ff4d4d, #b30000);
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.5);
       }
     }
   }
+  
   .editor-wrapper {
     flex-grow: 1;
     background-color: white;
@@ -204,22 +233,33 @@ body {
   width: 100%;
   font-weight: 700;
   padding: 0.75rem;
-  background-color: rgb(39, 104, 13);
+  background: linear-gradient(135deg, #00b894, #00cec9);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 206, 201, 0.5);
+  transition: all 0.3s ease;
+
   &:hover {
-    background-color: rgb(3, 148, 88);
+    background: linear-gradient(135deg, #00e6b8, #00fff1);
+    box-shadow: 0 0 15px rgba(0, 255, 225, 0.7), 0 0 25px rgba(0, 255, 180, 0.6);
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 }
+
 .copy-success {
   margin-left: 0.5rem;
-  color: rgb(9, 204, 9);
+  color: #00ff90;
   font-size: 0.8rem;
+  font-weight: 500;
+  text-shadow: 0 0 5px rgba(0, 255, 144, 0.5);
 }
+
 
 .run-container {
   background: black;
@@ -363,34 +403,50 @@ body {
   margin-top: 1rem;
   width: 100%;
   padding: 0.75rem;
-  background-color: rgb(99, 70, 231);
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.3s ease-in-out;
+  box-shadow: 0 0 10px rgba(108, 92, 231, 0.5);
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #a29bfe, #8e7fff);
+    box-shadow: 0 0 15px rgba(108, 92, 231, 0.8), 0 0 25px rgba(108, 92, 231, 0.4);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
-.download-button:hover {
-  background-color: #7c34ce;
-}
 .chatbox-button {
   margin-top: 1rem;
   width: 100%;
   padding: 0.75rem;
-  background-color: rgb(70, 196, 231);
+  background: linear-gradient(135deg, #00cec9, #81ecec);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.3s ease-in-out;
+  box-shadow: 0 0 10px rgba(0, 206, 201, 0.5);
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #00fff1, #00cec9);
+    box-shadow: 0 0 15px rgba(0, 255, 225, 0.8), 0 0 25px rgba(0, 255, 180, 0.6);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
-.chatbox-button:hover {
-  background-color: #a534ce;
-}
 
 /* Container for shimmer effect */
 .shimmer-container {
