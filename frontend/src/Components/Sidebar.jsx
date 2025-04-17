@@ -38,7 +38,7 @@ const Sidebar = ({
 
       {showMemberInfo ? (
         <div className="member-overlay">
-          <MemberInfo users ={users} />
+          <MemberInfo users={users} />
           <button
             className="close-overlay-button"
             onClick={() => setShowMemberInfo(false)}
@@ -55,24 +55,22 @@ const Sidebar = ({
           >
             👥 Members
           </button>
-          <p className="typing-indicator">{typing}</p>
           <button onClick={copyRoomId} className="copy-button">
             📋 Copy Room ID
           </button>
           {copySuccess && <span className="copy-success">{copySuccess}</span>}
-          <button className="leave-button" onClick={leaveRoom}>
-            🚪 Leave Room
-          </button>
+
           <button className="download-button" onClick={downloadCode}>
             📥 Download Code
           </button>
           <button className="chatbox-button" onClick={toggleChat}>
-            {messages.length > 0
-              ? `🗨️ Chat (${messages.length})`
-              : "🗨️ Chat"}
+            {messages.length > 0 ? `🗨️ Chat (${messages.length})` : "🗨️ Chat"}
           </button>
           <button className="Drawing-button" onClick={toggleBoard}>
             {Board ? "🎨 Stop Drawing" : "🎨 Start Drawing"}
+          </button>
+          <button className="leave-button" onClick={leaveRoom}>
+            🚪 Leave Room
           </button>
         </>
       )}

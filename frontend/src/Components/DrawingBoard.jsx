@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import "../styles/DrawingBoard.css";
 import {
   FaPen,
   FaEraser,

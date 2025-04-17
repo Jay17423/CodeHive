@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage, clearMessages } from "../Slice/GroupChat";
+import "../styles/Chat.css";
+
 
 const Chat = ({ socket, roomId, userName, toggleChat }) => {
   const [message, setMessage] = useState("");
