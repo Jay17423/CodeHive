@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import io from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
-import { setCode, setLanguage, setRoomId, setConsoleText } from "./Slice/CodeSlice";
+import {
+  setCode,
+  setLanguage,
+  setRoomId,
+  setConsoleText,
+} from "./Slice/CodeSlice";
 import JoinRoom from "./Components/JoinRoom";
 import Sidebar from "./Components/Sidebar";
 import CodeEditor from "./Components/CodeEditor";
@@ -38,6 +43,35 @@ const App = () => {
   const toggleBoard = () => {
     setBoard((prev) => !prev);
     console.log(Board);
+  };
+  const fetchRoomData = async (roomId) => {
+    try {
+      const response = await fetch("http://localhost:5050/get-room", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ roomId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch room data");
+      }
+
+      const data = await response.json();
+
+      if (data.code) dispatch(setCode(data.code));
+      if (data.language) dispatch(setLanguage(data.language));
+      if (data.consoleText) dispatch(setConsoleText(data.consoleText));
+      if (data.messages) {
+        data.messages.forEach((msg) => dispatch(addMessage(msg)));
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error fetching room data:", error);
+      return null;
+    }
   };
 
   useEffect(() => {
@@ -79,16 +113,20 @@ const App = () => {
 
   useEffect(() => {
     socket.on("userJoined", (users) => {
-      setUsers(users);
+      setUsers(users); // Update the local state with the list of users
+      // set the complete list
     });
 
     socket.on("codeUpdate", (newCode) => {
       dispatch(setCode(newCode));
     });
 
-    socket.on("userTyping", (user) => {
-      setTyping(`${user.slice(0, 8)}... is typing...`);
-      setTimeout(() => setTyping(""), 2000);
+    // In App.js, modify the typing handler
+    socket.on("userTyping", ({ userName: typingUser }) => {
+      if (typingUser && typingUser !== userName) {
+        setTyping(`${typingUser.slice(0, 8)}... is typing...`);
+        setTimeout(() => setTyping(""), 3000);
+      }
     });
 
     socket.on("languageUpdate", (newLanguage) => {
@@ -123,9 +161,14 @@ const App = () => {
     };
   }, []);
 
-  const joinRoom = () => {
+  const joinRoom = async () => {
     if (roomId && userName) {
+      // First fetch any existing room data
+      await fetchRoomData(roomId);
+
+      // Then join the room via socket
       socket.emit("join", { roomId, userName });
+
       setJoined(true);
     }
   };
@@ -209,8 +252,8 @@ const App = () => {
       <Sidebar
         toggleChat={() => setShowChat(!showChat)}
         toggleBoard={() => setBoard(!Board)}
-        roomId={roomId}
         users={users}
+        roomId={roomId}
         typing={typing}
         copyRoomId={copyRoomId}
         copySuccess={copySuccess}
@@ -262,7 +305,7 @@ const App = () => {
               Execute
             </button>
           )}
-          {!Board && <OutputConsole  />}
+          {!Board && <OutputConsole />}
         </div>
       </div>
       {showAskAi && (
@@ -273,4 +316,3 @@ const App = () => {
 };
 
 export default App;
-

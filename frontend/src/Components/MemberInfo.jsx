@@ -1,7 +1,7 @@
-import React from "react";
-
 
 const MemberInfo = ({users}) => {
+ 
+
   return (
     <div className="member-container">
       <h2 className="member-title">👥 Members</h2>

@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 
 const Sidebar = ({
   roomId,
-  users,
   typing,
   copyRoomId,
   copySuccess,
@@ -16,6 +15,7 @@ const Sidebar = ({
   toggleChat,
   toggleBoard,
   Board,
+  users,
 }) => {
   const [showMemberInfo, setShowMemberInfo] = useState(false);
   const { messages } = useSelector((state) => state.groupChat);
@@ -38,7 +38,7 @@ const Sidebar = ({
 
       {showMemberInfo ? (
         <div className="member-overlay">
-          <MemberInfo users={users} />
+          <MemberInfo users ={users} />
           <button
             className="close-overlay-button"
             onClick={() => setShowMemberInfo(false)}

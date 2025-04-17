@@ -1,19 +1,24 @@
 import express from "express";
-import RoomModel from "../models/room.js";
+import Room from "../models/RoomModel.js";
 
 const router = express.Router();
 
-router.post("/getRoomInfo", async (req, res) => {
+// New endpoint to get room data by ID
+router.post("/get-room", express.json(), async (req, res) => {
   try {
-    const { roomId, name } = req.body;
-    const info = new RoomModel({ roomId, members: [name] });
-    const roomInfo = await info.save();
-    res.status(200).json(roomInfo);
+    const { roomId } = req.body;
+    if (!roomId) {
+      return res.status(400).json({ message: "Room ID is required" });
+    }
+
+    const roomData = await Room.findOne({ roomId });
+    if (!roomData) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+    
+    res.json(roomData);
   } catch (error) {
-    console.error("Error saving room info:", error);
-    res
-      .status(500)
-      .json({ message: "Failed to save room info", error: error.message });
+    res.status(500).json({ message: "Error fetching room data", error });
   }
 });
 

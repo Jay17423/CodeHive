@@ -26,8 +26,9 @@ const codeSlice = createSlice({
       state.consoleText = action.payload;
     },
   },
-})
+});
 
-export const { setCode, setLanguage, setRoomId, setVersion,setConsoleText } = codeSlice.actions;
+export const { setCode, setLanguage, setRoomId, setVersion, setConsoleText } =
+  codeSlice.actions;
 
 export default codeSlice.reducer;
