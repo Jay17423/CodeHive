@@ -17,7 +17,7 @@ import Chat from "./Components/Chat";
 import { addMessage } from "./Slice/GroupChat";
 import DrawingBoard from "./Components/DrawingBoard";
 
-const socket = io("http://localhost:5050");
+const socket = io("https://codehive-srlm.onrender.com");
 
 const App = () => {
   const dispatch = useDispatch();
