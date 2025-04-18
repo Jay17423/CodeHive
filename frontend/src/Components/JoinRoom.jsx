@@ -3,8 +3,9 @@ import Logo from "../assets/logo.png";
 
 const JoinRoom = ({ roomId, userName, setRoomId, setUserName, joinRoom }) => {
   const generateRoomId = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let roomId = '';
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let roomId = "";
     for (let i = 0; i < 20; i++) {
       roomId += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -30,7 +31,7 @@ const JoinRoom = ({ roomId, userName, setRoomId, setUserName, joinRoom }) => {
         />
         <button onClick={joinRoom}>Join Room</button>
         <p className="random-room" onClick={() => setRoomId(generateRoomId())}>
-          Click to Generate a Random Room Id
+          🔄 Click to Generate a Random Room ID
         </p>
       </div>
     </div>

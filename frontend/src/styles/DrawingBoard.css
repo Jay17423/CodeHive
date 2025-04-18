@@ -174,11 +174,40 @@
 }
 
 
-.random-room{
+.random-room {
   margin-top: 10px;
-  color: rgb(151, 142, 142);
+  color: #ffffff;
+  background-color: #4e4eff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
   cursor: pointer;
+  width: fit-content;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: pulse 2s infinite;
 }
+
+.random-room:hover {
+  background-color: #3c3cff;
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(78, 78, 255, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(78, 78, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(78, 78, 255, 0);
+  }
+}
+
 
 .member-button {
   width: 100%;
