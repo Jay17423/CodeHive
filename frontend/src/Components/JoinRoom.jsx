@@ -1,5 +1,9 @@
 import React from "react";
 import Logo from "../assets/logo.png";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const JoinRoom = ({ roomId, userName, setRoomId, setUserName, joinRoom }) => {
   const generateRoomId = () => {
@@ -12,8 +16,29 @@ const JoinRoom = ({ roomId, userName, setRoomId, setUserName, joinRoom }) => {
     return roomId;
   };
 
+  const handleJoinRoom = () => {
+    if (roomId.length > 40) {
+      toast.error("Room ID must be 40 characters or less");
+      return;
+    }
+
+    if (userName.length > 20) {
+      toast.error("Username must be 20 characters or less");
+      return;
+    }
+
+    if (!roomId.trim() || !userName.trim()) {
+      toast.warning("⚠️ Both fields are required");
+      return;
+    }
+
+    joinRoom(); // Call the prop function
+  };
+
   return (
     <div className="join-container">
+      <ToastContainer position="top-right" autoClose={3000} />
+
       <div className="join-form">
         <img className="logo" src={Logo} alt="Logo" />
         <h1>Join Code Room</h1>
@@ -29,7 +54,7 @@ const JoinRoom = ({ roomId, userName, setRoomId, setUserName, joinRoom }) => {
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
         />
-        <button onClick={joinRoom}>Join Room</button>
+        <button onClick={handleJoinRoom}>Join Room</button>
         <p className="random-room" onClick={() => setRoomId(generateRoomId())}>
           🔄 Click to Generate a Random Room ID
         </p>

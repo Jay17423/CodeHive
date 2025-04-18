@@ -4,7 +4,8 @@ const roomSchema = new mongoose.Schema({
   roomId: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    set: (value) => value.length > 20 ? value.slice(0, 20) : value
   },
   members:{
     type: [String],
