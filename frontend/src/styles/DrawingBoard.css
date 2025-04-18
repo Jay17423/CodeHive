@@ -177,36 +177,31 @@
 .random-room {
   margin-top: 10px;
   color: #ffffff;
-  background-color: #4e4eff;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 16px;
-  text-align: center;
+  font-weight: 500;
+  font-size: 14px;
   cursor: pointer;
-  width: fit-content;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  animation: pulse 2s infinite;
+  text-decoration: none;
+  transition: color 0.3s ease, transform 0.2s ease;
+  animation: glow-text 2s infinite ease-in-out;
 }
 
 .random-room:hover {
-  background-color: #3c3cff;
+  color: #d0d0ff;
   transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
-@keyframes pulse {
+@keyframes glow-text {
   0% {
-    box-shadow: 0 0 0 0 rgba(78, 78, 255, 0.5);
+    text-shadow: 0 0 4px #ffffff;
   }
-  70% {
-    box-shadow: 0 0 0 10px rgba(78, 78, 255, 0);
+  50% {
+    text-shadow: 0 0 8px #ffffff, 0 0 12px #aaaaff;
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(78, 78, 255, 0);
+    text-shadow: 0 0 4px #ffffff;
   }
 }
+
 
 
 .member-button {
