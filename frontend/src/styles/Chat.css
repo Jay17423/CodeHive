@@ -18,7 +18,6 @@
     transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
-/* Smooth Entrance */
 .chatbox-container.chat-visible {
     transform: scale(1);
     opacity: 1;
@@ -29,7 +28,6 @@
     opacity: 0;
 }
 
-/* Chat Header */
 .chatbox-header {
     background: linear-gradient(135deg, #1e3c72, #2a5298);
     color: white;
@@ -44,13 +42,12 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Chatbox Buttons (Close & Clear Chat) */
+
 .chatbox-buttons {
     display: flex;
     gap: 10px;
 }
 
-/* Chat Close Button */
 .chatbox-close {
     background-color: transparent;
     border: none;
@@ -65,10 +62,8 @@
     transform: rotate(90deg);
 }
 
-/* Clear Chat Button */
 .chatbox-clear {
     background: rgba(220, 203, 203, 0.8);
-    /* Light grey with transparency */
     border: 1px solid rgba(200, 200, 200, 0.6);
     padding: 6px 12px;
     font-size: 20px;
@@ -80,7 +75,6 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 }
 
-/* Hover Effect */
 .chatbox-clear:hover {
     background: rgba(255, 255, 255, 0.9);
     border-color: rgba(180, 180, 180, 0.8);
@@ -89,14 +83,12 @@
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Active Click Effect */
 .chatbox-clear:active {
     background: rgba(230, 230, 230, 0.9);
     transform: scale(0.95);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Empty Chat Message */
 .chatbox-empty {
     text-align: center;
     color: #999;
@@ -104,7 +96,6 @@
     padding: 20px;
 }
 
-/* Chat Messages */
 .chatbox-messages {
     flex-grow: 1;
     overflow-y: auto;
@@ -126,7 +117,6 @@
     border-radius: 10px;
 }
 
-/* Message Bubble */
 .chat-message {
     max-width: 75%;
     padding: 12px 16px;
@@ -139,7 +129,6 @@
     animation: fadeIn 0.4s ease-in-out;
 }
 
-/* Typing Indicator */
 .chatbox-typing {
     display: flex;
     align-items: center;
@@ -154,13 +143,11 @@
     margin: 5px 0;
 }
 
-/* Typing Dots */
 .typing-dots {
     display: flex;
     gap: 3px;
 }
 
-/* Each Dot */
 .typing-dots span {
     width: 6px;
     height: 6px;
@@ -170,7 +157,6 @@
     animation: typingBlink 1.5s infinite;
 }
 
-/* Delay Each Dot */
 .typing-dots span:nth-child(2) {
     animation-delay: 0.2s;
 }
@@ -179,7 +165,6 @@
     animation-delay: 0.4s;
 }
 
-/* Keyframes for Dot Animation */
 @keyframes typingBlink {
     0% {
         opacity: 0.3;
@@ -194,8 +179,6 @@
     }
 }
 
-
-/* Sent Messages */
 .chat-message.sent {
     align-self: flex-end;
     background: linear-gradient(135deg, #007bff, #0056b3);
@@ -204,7 +187,6 @@
     box-shadow: 0 3px 8px rgba(0, 123, 255, 0.3);
 }
 
-/* Received Messages */
 .chat-message.received {
     align-self: flex-start;
     background: rgba(255, 255, 255, 0.2);
@@ -213,7 +195,6 @@
     box-shadow: 0 3px 8px rgba(255, 255, 255, 0.2);
 }
 
-/* Message Fade-in Animation */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -226,7 +207,6 @@
     }
 }
 
-/* Chat Input Section */
 .chatbox-input-container {
     display: flex;
     padding: 12px;
@@ -235,7 +215,6 @@
     align-items: center;
 }
 
-/* Input Field */
 .chatbox-input {
     flex: 1;
     padding: 12px;
@@ -255,8 +234,6 @@
 .chatbox-input:focus {
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
-
-/* Send Button */
 .chatbox-send-button {
     background: linear-gradient(135deg, #007bff, #00bfff);
     color: white;
@@ -277,7 +254,6 @@
     transform: scale(1.1);
 }
 
-/* Neon Glow Effect */
 .chatbox-container,
 .chatbox-input,
 .chatbox-send-button {

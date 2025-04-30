@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./styles/App.css";
 import io from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
@@ -79,11 +79,11 @@ const App = () => {
       dispatch(addMessage(chatData));
     };
 
-    socket.off("chatMessage"); // Remove any existing listener
-    socket.on("chatMessage", handleChatMessage); // Add a fresh one
+    socket.off("chatMessage");
+    socket.on("chatMessage", handleChatMessage);
 
     return () => {
-      socket.off("chatMessage", handleChatMessage); // Cleanup listener
+      socket.off("chatMessage", handleChatMessage);
     };
   }, [dispatch]);
 
@@ -113,15 +113,13 @@ const App = () => {
 
   useEffect(() => {
     socket.on("userJoined", (users) => {
-      setUsers(users); // Update the local state with the list of users
-      // set the complete list
+      setUsers(users);
     });
 
     socket.on("codeUpdate", (newCode) => {
       dispatch(setCode(newCode));
     });
 
-    // In App.js, modify the typing handler
     socket.on("userTyping", ({ userName: typingUser }) => {
       if (typingUser && typingUser !== userName) {
         setTyping(`${typingUser.slice(0, 8)}... is typing...`);
@@ -163,10 +161,8 @@ const App = () => {
 
   const joinRoom = async () => {
     if (roomId && userName) {
-      // First fetch any existing room data
       await fetchRoomData(roomId);
 
-      // Then join the room via socket
       socket.emit("join", { roomId, userName });
 
       setJoined(true);

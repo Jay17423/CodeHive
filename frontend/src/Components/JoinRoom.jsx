@@ -1,9 +1,7 @@
-import React from "react";
 import Logo from "../assets/logo.png";
 import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 
 const JoinRoom = ({ roomId, userName, setRoomId, setUserName, joinRoom }) => {
   const generateRoomId = () => {
@@ -32,7 +30,7 @@ const JoinRoom = ({ roomId, userName, setRoomId, setUserName, joinRoom }) => {
       return;
     }
 
-    joinRoom(); // Call the prop function
+    joinRoom();
   };
 
   return (

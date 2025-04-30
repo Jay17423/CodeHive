@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Logo from "../assets/logo.png";
 import MemberInfo from "./MemberInfo";
 import { useSelector } from "react-redux";
 
 const Sidebar = ({
-  roomId,
-  typing,
   copyRoomId,
   copySuccess,
   leaveRoom,

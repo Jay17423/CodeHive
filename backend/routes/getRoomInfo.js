@@ -3,7 +3,6 @@ import Room from "../models/RoomModel.js";
 
 const router = express.Router();
 
-// New endpoint to get room data by ID
 router.post("/get-room", express.json(), async (req, res) => {
   try {
     const { roomId } = req.body;

@@ -1,28 +1,24 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addMessage, clearMessages } from "../Slice/GroupChat";
+import { clearMessages } from "../Slice/GroupChat";
 import "../styles/Chat.css";
-
 
 const Chat = ({ socket, roomId, userName, toggleChat }) => {
   const [message, setMessage] = useState("");
   const dispatch = useDispatch();
   const messages = useSelector((state) => state.groupChat.messages);
-  const [typingUsers, setTypingUsers] = useState(new Set()); // Use Set for unique users
+  const [typingUsers, setTypingUsers] = useState(new Set());
 
-  // Emit event when user is typing (with debounce)
   useEffect(() => {
     if (message) {
       socket.emit("userTyping", { roomId, userName });
     }
   }, [message, socket, roomId, userName]);
 
-  // Listen for other users typing
   useEffect(() => {
     socket.on("userTyping", ({ userName }) => {
-      setTypingUsers((prev) => new Set([...prev, userName])); // Add user to Set
+      setTypingUsers((prev) => new Set([...prev, userName]));
 
-      // Remove user after 3 seconds of inactivity
       setTimeout(() => {
         setTypingUsers((prev) => {
           const updatedUsers = new Set(prev);
@@ -37,22 +33,19 @@ const Chat = ({ socket, roomId, userName, toggleChat }) => {
     };
   }, [socket]);
 
-  
   const sendMessage = () => {
     if (message.trim()) {
       socket.emit("chatMessage", { roomId, userName, message });
-      setMessage(""); // Clear input after sending
+      setMessage("");
     }
   };
 
-  // Function to clear all messages
   const clearChat = () => {
-    dispatch(clearMessages()); // Clear messages from Redux
+    dispatch(clearMessages());
   };
 
   return (
     <div className="chatbox-container chat-visible">
-      {/* Chat Header */}
       <div className="chatbox-header">
         Chat Room
         <div className="chatbox-buttons">
@@ -65,7 +58,6 @@ const Chat = ({ socket, roomId, userName, toggleChat }) => {
         </div>
       </div>
 
-      {/* Chat Messages */}
       <div className="chatbox-messages">
         {messages.length === 0 ? (
           <p className="chatbox-empty">No messages yet</p>
@@ -86,7 +78,7 @@ const Chat = ({ socket, roomId, userName, toggleChat }) => {
           <div className="chatbox-typing">
             <p>
               {(() => {
-                const users = Array.from(typingUsers).filter((user) => user); // Filter out any undefined values
+                const users = Array.from(typingUsers).filter((user) => user);
                 return users.length === 1
                   ? `${users[0]} is typing...`
                   : `${users.slice(0, -1).join(", ")} and ${
@@ -96,11 +88,8 @@ const Chat = ({ socket, roomId, userName, toggleChat }) => {
             </p>
           </div>
         )}
-
-
       </div>
 
-      {/* Chat Input */}
       <div className="chatbox-input-container">
         <input
           type="text"

@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ShimmerUi from "./ShimmerUi";
 
 const AskAi = ({ aiResponse, onSendQuestion }) => {
   const [question, setQuestion] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
-  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [isLoading, setIsLoading] = useState(false); 
 
   useEffect(() => {
     if (aiResponse.question || aiResponse.response) {
       setChatHistory((prev) => [...prev, aiResponse]);
-      setIsLoading(false); // Stop loading once response is received
+      setIsLoading(false); 
     }
   }, [aiResponse]);
 
@@ -17,7 +17,7 @@ const AskAi = ({ aiResponse, onSendQuestion }) => {
     if (question.trim()) {
       onSendQuestion(question);
       setQuestion("");
-      setIsLoading(true); // Start loading effect
+      setIsLoading(true); 
     }
   };
 
@@ -58,8 +58,6 @@ const AskAi = ({ aiResponse, onSendQuestion }) => {
             </div>
           </div>
         ))}
-
-        {/* Show Shimmer UI when waiting for response */}
         {isLoading && <ShimmerUi />}
       </div>
 

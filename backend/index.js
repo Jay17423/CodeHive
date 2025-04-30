@@ -14,7 +14,6 @@ import {
   cleanupInactiveRooms,
 } from "./service/roomService.js";
 
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, ".env") });
@@ -32,10 +31,9 @@ const io = new Server(server, {
   },
 });
 
-// Use a Map to store rooms, where each room has a Set of users and other data
 const rooms = new Map();
 
-// Set up periodic saving (every minute)
+// Save the data on Every 60 seconds
 setInterval(async () => {
   console.log("Saving all rooms data...");
   for (const [roomId, roomData] of rooms.entries()) {
@@ -59,21 +57,18 @@ setInterval(() => {
   if (now.getHours() === 3 && now.getMinutes() === 0) {
     cleanupInactiveRooms();
   }
-}, 60 * 1000); // Check every minute
+}, 60 * 1000);
 
 io.on("connection", (socket) => {
   console.log("User Connected", socket.id);
   let currentRoom = null;
   let currentUser = null;
-
-  // Handle typing event
   socket.on("userTyping", ({ roomId, userName }) => {
     socket.to(roomId).emit("userTyping", { userName });
   });
 
   // Listen for the "join" event when a user joins a room
   socket.on("join", async ({ roomId, userName }) => {
-    // If the user is already in a room, leave it
     if (currentRoom) {
       socket.leave(currentRoom);
       rooms.get(currentRoom).users.delete(currentUser);
@@ -91,13 +86,9 @@ io.on("connection", (socket) => {
     // Update the current room and user
     currentRoom = roomId;
     currentUser = { id: socket.id, name: userName };
-
-    // Join the new room
     socket.join(roomId);
 
-    // Initialize the room if it doesn't exist
     if (!rooms.has(roomId)) {
-      // Try to load from database first
       const existingRoom = await getRoomData(roomId);
       if (existingRoom) {
         rooms.set(roomId, {
@@ -154,7 +145,6 @@ io.on("connection", (socket) => {
   // Listen for the "leaveRoom" event when a user leaves the room
   socket.on("leaveRoom", async () => {
     if (currentRoom && currentUser) {
-      // Remove the user from the room's Set
       rooms.get(currentRoom).users.delete(currentUser);
       io.to(currentRoom).emit(
         "userJoined",
@@ -166,7 +156,6 @@ io.on("connection", (socket) => {
         ),
       });
 
-      // Leave the room and reset currentRoom and currentUser
       socket.leave(currentRoom);
       currentRoom = null;
       currentUser = null;
@@ -188,7 +177,6 @@ io.on("connection", (socket) => {
 
   socket.on("drawEnd", async ({ roomId }) => {
     if (rooms.has(roomId)) {
-      // In a real implementation, you'd capture the drawing state here
       rooms.get(roomId).drawing = { exists: true };
       await saveRoomData(roomId, { drawingState: rooms.get(roomId).drawing });
       socket.to(roomId).emit("remoteDrawEnd");
@@ -283,7 +271,7 @@ io.on("connection", (socket) => {
         `;
 
         const response = await openai.chat.completions.create({
-          model: "gpt-4o-mini", 
+          model: "gpt-4o-mini",
           messages: [{ role: "system", content: prompt }],
         });
         io.to(roomId).emit("aiResponse", {
@@ -321,7 +309,6 @@ io.on("connection", (socket) => {
   // Listen for disconnection events
   socket.on("disconnect", async () => {
     if (currentRoom && currentUser) {
-      // Remove the user from the room's Set
       rooms.get(currentRoom).users.delete(currentUser);
       io.to(currentRoom).emit(
         "userJoined",
