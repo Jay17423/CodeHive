@@ -4,6 +4,7 @@ import MemberInfo from "./MemberInfo";
 import { useSelector } from "react-redux";
 
 const Sidebar = ({
+  roomId,
   copyRoomId,
   copySuccess,
   leaveRoom,
@@ -36,7 +37,7 @@ const Sidebar = ({
 
       {showMemberInfo ? (
         <div className="member-overlay">
-          <MemberInfo users={users} />
+          <MemberInfo users={users} roomId={roomId} />
           <button
             className="close-overlay-button"
             onClick={() => setShowMemberInfo(false)}

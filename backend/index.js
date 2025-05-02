@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import path from "path";
+import cors from "cors"
 import { fileURLToPath } from "url";
 import axios from "axios";
 import express from "express";
@@ -8,6 +9,8 @@ import { Server } from "socket.io";
 import OpenAI from "openai";
 import connectDB from "./config/database.js";
 import getRoomInfo from "./routes/getRoomInfo.js";
+import saveMember from "./routes/saveMember.js"
+import bodyParser from 'body-parser';
 import {
   saveRoomData,
   getRoomData,
@@ -23,14 +26,21 @@ app.use(express.json());
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const server = http.createServer(app);
 
+app.use(cors({
+  origin: "http://localhost:5173", // Your frontend's origin
+  credentials: true, // Enable cookies and credentials sharing
+  allowedHeaders: ["Content-Type", "Authorization"], // Include necessary headers
+}));
+app.options("*", cors());
+
 app.use("/", getRoomInfo);
+app.use("/",saveMember)
 
 const io = new Server(server, {
   cors: {
     origin: "*",
   },
 });
-
 const rooms = new Map();
 
 // Save the data on Every 60 seconds
