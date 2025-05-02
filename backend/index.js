@@ -27,13 +27,13 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-  origin: "https://codehive-srlm.onrender.com",
+  origin: "*",
 }));
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const server = http.createServer(app);
 
 app.options("*", cors({
-  origin: "https://codehive-srlm.onrender.com",
+  origin: "*",
 }));
 
 app.use("/", getRoomInfo);
