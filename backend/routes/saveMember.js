@@ -27,7 +27,7 @@ router.post("/addMember", async (req, res) => {
     
     await roomData.save();
 
-    res.status(200).json({ message: "Members added successfully.", roomData });
+    res.status(200).json({ message: "Members added successfully." });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

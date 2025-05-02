@@ -42,7 +42,7 @@ const App = () => {
 
   const toggleBoard = () => {
     setBoard((prev) => !prev);
-    console.log(Board);
+    // console.log(Board);
   };
   const fetchRoomData = async (roomId) => {
     try {

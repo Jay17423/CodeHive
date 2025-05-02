@@ -4,14 +4,14 @@ import { useEffect } from "react";
 const MemberInfo = ({ users, roomId }) => {
   
   const userName = users.map(user => user.name);
-  console.log(userName,roomId);
+  // console.log(userName,roomId);
   const addMembers = async () => {
     try {
       const response = await axios.post(
         "http://localhost:5050/addMember",
         { userName, roomId } 
       );
-      console.log("Members added successfully:", response.data);
+      // console.log("Members added successfully:", response.data);
     } catch (error) {
       console.error("Error adding members:", error.message);
     }
@@ -19,7 +19,7 @@ const MemberInfo = ({ users, roomId }) => {
 
   useEffect(() =>{
     addMembers();
-  },)
+  },[users])
 
   return (
     <div className="member-container">

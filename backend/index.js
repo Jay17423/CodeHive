@@ -17,21 +17,24 @@ import {
   cleanupInactiveRooms,
 } from "./service/roomService.js";
 
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
 app.use(express.json());
+
+app.use(cors({
+  origin: "http://localhost:5173",
+}));
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const server = http.createServer(app);
 
-// app.use(cors({
-//   origin: "http://localhost:5173", // Your frontend's origin
-//   credentials: true, // Enable cookies and credentials sharing
-//   allowedHeaders: ["Content-Type", "Authorization"], // Include necessary headers
-// }));
-app.options("*", cors());
+app.options("*", cors({
+  origin: "http://localhost:5173",
+}));
 
 app.use("/", getRoomInfo);
 app.use("/",saveMember)
