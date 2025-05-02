@@ -26,11 +26,11 @@ app.use(express.json());
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const server = http.createServer(app);
 
-app.use(cors({
-  origin: "http://localhost:5173", // Your frontend's origin
-  credentials: true, // Enable cookies and credentials sharing
-  allowedHeaders: ["Content-Type", "Authorization"], // Include necessary headers
-}));
+// app.use(cors({
+//   origin: "http://localhost:5173", // Your frontend's origin
+//   credentials: true, // Enable cookies and credentials sharing
+//   allowedHeaders: ["Content-Type", "Authorization"], // Include necessary headers
+// }));
 app.options("*", cors());
 
 app.use("/", getRoomInfo);
