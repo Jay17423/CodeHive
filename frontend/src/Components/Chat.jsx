@@ -11,6 +11,7 @@ const Chat = ({ socket, roomId, userName, toggleChat }) => {
   const dispatch = useDispatch();
   const messages = useSelector((state) => state.groupChat.messages);
   const emojiPickerRef = useRef(null);
+  const inputRef = useRef(null);
 
   // Handle typing indicators
   useEffect(() => {
@@ -64,14 +65,16 @@ const Chat = ({ socket, roomId, userName, toggleChat }) => {
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // Prevent new line in input
       sendMessage();
     }
   };
 
   const onEmojiClick = (emojiObject) => {
     setMessage((prev) => prev + emojiObject.emoji);
+    inputRef.current.focus(); // Refocus input after emoji selection
   };
 
   const clearChat = () => {
@@ -127,7 +130,11 @@ const Chat = ({ socket, roomId, userName, toggleChat }) => {
       <div className="chatbox-input-container">
         <button
           className="chatbox-emoji-button"
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+          onClick={() => {
+            setShowEmojiPicker(!showEmojiPicker);
+            inputRef.current.focus();
+          }}
+          type="button"
         >
           😊
         </button>
@@ -144,11 +151,12 @@ const Chat = ({ socket, roomId, userName, toggleChat }) => {
         )}
 
         <input
+          ref={inputRef}
           type="text"
           className="chatbox-input"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyDown}
           placeholder="Type a message..."
         />
         <button className="chatbox-send-button" onClick={sendMessage}>
