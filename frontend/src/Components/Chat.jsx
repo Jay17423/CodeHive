@@ -1,20 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { clearMessages } from "../Slice/GroupChat";
+import EmojiPicker from "emoji-picker-react";
 import "../styles/Chat.css";
 
 const Chat = ({ socket, roomId, userName, toggleChat }) => {
   const [message, setMessage] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [typingUsers, setTypingUsers] = useState(new Set());
   const dispatch = useDispatch();
   const messages = useSelector((state) => state.groupChat.messages);
-  const [typingUsers, setTypingUsers] = useState(new Set());
+  const emojiPickerRef = useRef(null);
 
+  // Handle typing indicators
   useEffect(() => {
     if (message) {
       socket.emit("userTyping", { roomId, userName });
     }
   }, [message, socket, roomId, userName]);
 
+  // Listen for typing users
   useEffect(() => {
     socket.on("userTyping", ({ userName }) => {
       setTypingUsers((prev) => new Set([...prev, userName]));
@@ -33,11 +38,40 @@ const Chat = ({ socket, roomId, userName, toggleChat }) => {
     };
   }, [socket]);
 
+  // Close emoji picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target) &&
+        !event.target.classList.contains("chatbox-emoji-button")
+      ) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const sendMessage = () => {
     if (message.trim()) {
       socket.emit("chatMessage", { roomId, userName, message });
       setMessage("");
+      setShowEmojiPicker(false);
     }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  };
+
+  const onEmojiClick = (emojiObject) => {
+    setMessage((prev) => prev + emojiObject.emoji);
   };
 
   const clearChat = () => {
@@ -91,11 +125,30 @@ const Chat = ({ socket, roomId, userName, toggleChat }) => {
       </div>
 
       <div className="chatbox-input-container">
+        <button
+          className="chatbox-emoji-button"
+          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+        >
+          😊
+        </button>
+
+        {showEmojiPicker && (
+          <div className="emoji-picker-wrapper" ref={emojiPickerRef}>
+            <EmojiPicker
+              onEmojiClick={onEmojiClick}
+              width={300}
+              height={350}
+              previewConfig={{ showPreview: false }}
+            />
+          </div>
+        )}
+
         <input
           type="text"
           className="chatbox-input"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyPress={handleKeyPress}
           placeholder="Type a message..."
         />
         <button className="chatbox-send-button" onClick={sendMessage}>
