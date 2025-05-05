@@ -39,7 +39,6 @@ const Chat = ({ socket, roomId, userName, toggleChat }) => {
     };
   }, [socket]);
 
-  // Close emoji picker when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -67,7 +66,7 @@ const Chat = ({ socket, roomId, userName, toggleChat }) => {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault(); // Prevent new line in input
+      e.preventDefault();
       sendMessage();
     }
   };
